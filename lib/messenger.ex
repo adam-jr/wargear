@@ -1,7 +1,7 @@
 defmodule Wargear.Messenger do
 
   def notify_of_turn(player_name) do
-    url = "https://hooks.slack.com/services/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"
+    url = Application.get_env(:wargear, :url)[:slack_webhook]
     headers = [{"Content-Type", "application/json"}]
     body = Poison.encode!(%{text: "<#{slack_name(player_name)}>, it's your turn"})
     HTTPoison.post!(url, body, headers)
