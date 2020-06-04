@@ -1,12 +1,11 @@
 defmodule Wargear.Periodically do
   use GenServer
   alias Wargear.Turns
-  alias Turns.Turn
 
-  @table :turn_start
-  @key :last_turn_start
-  @filename 'turn_start.txt'
-  @interval 120 * 1000 #seconds
+  @table :periodical_values
+  @lookup_key :last_notified_turn_id
+  @filename 'periodically.txt'
+  @interval 1 * 60 * 1000 # 1 minute
 
   def start_link do
     GenServer.start_link(__MODULE__, %{})
@@ -20,24 +19,51 @@ defmodule Wargear.Periodically do
   def handle_info(:work, state) do
     schedule_work() # Reschedule once more
 
-    last = Turns.latest_turn_start()
+    do_work()
 
+    {:noreply, state}
+  end
+
+  defp do_work do
+    turns = Turns.get(0, nil)
+    focus = Enum.at(turns, -2)
+
+    if (focus.type == :turn_start and is_overdue?(focus.datetime) and not already_notified?(focus.id)) do
+      send_notification(focus)
+    end
+  end
+
+  def send_notification(turn) do
+    :dets.open_file(@table, [{:file, @filename}])
+    :dets.insert(@table, {@lookup_key, turn.id})
+    :dets.close(@table)
+    Wargear.Messenger.notify_of_turn(turn.player)
+  end
+
+  def is_overdue?(datetime) do
+    horizon = 
+      NaiveDateTime.utc_now()
+      |> Timex.to_datetime() 
+      |> Timex.shift(hours: -4, minutes: -30) #-4 hours for utc shift...
+
+    case Timex.parse(datetime, "%B %-d, %Y %-I:%M %p", :strftime) do
+      {:ok, naive} -> Timex.to_datetime(naive) |> Timex.before?(horizon)
+      {:error, _err} -> false
+    end
+  end
+
+  def already_notified?(current_id) do
     :dets.open_file(@table, [{:file, @filename}])
 
-    dets =  
-      case :dets.lookup(@table, @key) do
-        [{@key, %Turn{} = turn}] -> turn
-        _ -> %Turn{}
+    dets_id =  
+      case :dets.lookup(@table, @lookup_key) do
+        [{@lookup_key, turn_id}] -> turn_id
+        _ -> nil
       end
-
-    if (last.id != dets.id) do
-      IO.inspect "updating dets, notifying player"
-      :dets.insert(@table, {@key, last})
-    end
 
     :dets.close(@table)
 
-    {:noreply, state}
+    current_id == dets_id
   end
 
   defp schedule_work() do
