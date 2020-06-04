@@ -27,7 +27,28 @@ defmodule WarGear.Turns do
     end
   end
 
-  def to_turn({"tr", [{"class", "row_dark"}], children}) do
+  defp get_type(action) do
+    case action do
+      {_, _, [_, " attacked ", _, _]}       -> :attack
+      {_, _, [_, " awarded " <> _rest]}     -> :card_award
+      {_, _, [_, " captured " <> _rest, _]} -> :card_capture
+      {_, _, [_, " traded " <> _rest]}      -> :card_trade
+      {_, _, [_, " eliminated ", _]}        -> :elimination
+      {_, _, ["Game won by " <> _p]}        -> :game_won
+      {_, _, [_, " occupied ", _, _]}       -> :occupy
+      {_, _, [_, " ended " <> _rest]}       -> :turn_end
+      {_, _, [_, " started " <> _rest]}     -> :turn_start
+      {_, _, [_, " fortified " <> _rest]}   -> :unit_fortify
+      {_, _, [_, " placed " <> _rest]}      -> :unit_place
+      {_, _, [_, " received " <> _rest]}    -> :unit_receive
+      {_, _, [_, " transferred " <> _rest]} -> :unit_transfer
+      _ ->
+        IO.inspect action
+        nil
+    end
+  end
+
+  defp to_turn({"tr", [{"class", "row_dark"}], children}) do
     [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] = Enum.map(children, fn {_, _, val} -> val end)
 
     {att, def} = get_sides(action)
@@ -51,7 +72,7 @@ defmodule WarGear.Turns do
     }
   end
 
-  def get_player(action) do
+  defp get_player(action) do
     case action do
       {_, _, [{_, _, [name]}, _]}    -> name
       {_, _, [{_, _, [name]}, _, _]} -> name
@@ -60,28 +81,7 @@ defmodule WarGear.Turns do
     end
   end
 
-  def get_type(action) do
-    case action do
-      {_, _, [_, " started " <> _rest]}     -> :start
-      {_, _, [_, " received " <> _rest]}    -> :unit_receive
-      {_, _, [_, " placed " <> _rest]}      -> :unit_place
-      {_, _, [_, " attacked ", _, _]}       -> :attack
-      {_, _, [_, " occupied ", _, _]}       -> :occupy
-      {_, _, [_, " ended " <> _rest]}       -> :end
-      {_, _, [_, " awarded " <> _rest]}     -> :card_award
-      {_, _, [_, " transferred " <> _rest]} -> :unit_transfer
-      {_, _, [_, " fortified " <> _rest]}   -> :unit_fortify
-      {_, _, [_, " traded " <> _rest]}      -> :card_trade
-      {_, _, [_, " eliminated ", _]}        -> :eliminate
-      {_, _, [_, " captured " <> _rest, _]} -> :card_capture
-      {_, _, ["Game won by " <> _p]}        -> :game_won
-      _ -> 
-        IO.inspect action
-        nil
-    end
-  end
-
-  def get_trade_units(action) do
+  defp get_trade_units(action) do
     case action do
       {_, _, [{_, _, [_name]}, " traded cards " <> rest]} ->
         rest
@@ -92,7 +92,7 @@ defmodule WarGear.Turns do
     end
   end
 
-  def get_bonus_units(action) do
+  defp get_bonus_units(action) do
     case action do
       {_, _, [{_, _, [_name]}, " received elimination bonus of " <> rest]} ->
         rest
@@ -108,12 +108,12 @@ defmodule WarGear.Turns do
     end 
   end
 
-  def get_sides({_, _, [{_, _, [attacker]}, " attacked ", {_, _, [defender]}, _]}), do: {attacker, defender}
-  def get_sides({_, _, [{_, _, [attacker]}, " attacked ", _, _]}), do: {attacker, nil}
-  def get_sides({_, _, [{_, _, [attacker]}, " occupied ", {_, _, [defender]}, _]}), do: {attacker, defender}
-  def get_sides({_, _, [{_, _, [attacker]}, " occupied ", _, _]}), do: {attacker, nil}
-  def get_sides(_), do: {nil, nil}
+  defp get_sides({_, _, [{_, _, [attacker]}, " attacked ", {_, _, [defender]}, _]}), do: {attacker, defender}
+  defp get_sides({_, _, [{_, _, [attacker]}, " attacked ", _, _]}), do: {attacker, nil}
+  defp get_sides({_, _, [{_, _, [attacker]}, " occupied ", {_, _, [defender]}, _]}), do: {attacker, defender}
+  defp get_sides({_, _, [{_, _, [attacker]}, " occupied ", _, _]}), do: {attacker, nil}
+  defp get_sides(_), do: {nil, nil}
 
-  def get_hd([]), do: "0"
-  def get_hd([el]), do: el
+  defp get_hd([]), do: "0"
+  defp get_hd([el]), do: el
 end
