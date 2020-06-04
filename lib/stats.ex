@@ -1,5 +1,5 @@
 defmodule WarGear.Stats do
-  alias WarGear.{Player, Turns}
+  alias WarGear.Player
 
   @initialized_players %{
     "adam jormp jomp"    => %Player{name: "adam jormp jomp"},
