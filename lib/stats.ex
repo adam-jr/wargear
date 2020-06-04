@@ -1,5 +1,5 @@
-defmodule WarGear.Stats do
-  alias WarGear.Player
+defmodule Wargear.Stats do
+  alias Wargear.Player
 
   @initialized_players %{
     "adam jormp jomp"    => %Player{name: "adam jormp jomp"},
@@ -12,7 +12,7 @@ defmodule WarGear.Stats do
   }
 
   def get_standings(turn \\ nil) do
-    Enum.reduce(WarGear.Turns.get(0, turn), @initialized_players, fn turn, players -> 
+    Enum.reduce(Wargear.Turns.get(0, turn), @initialized_players, fn turn, players -> 
       case turn.type do
         :unit_receive -> add_units(players, turn.player, turn.bonus_units)
         :card_trade -> add_units(players, turn.player, turn.trade_units)

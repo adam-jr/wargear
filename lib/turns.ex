@@ -1,18 +1,18 @@
-defmodule WarGear.Player do
-  defstruct name: nil, units: 54, territories: 18
+defmodule Wargear.Player do
+  defstruct name: nil, units: 33, territories: 11
 end
 
-defmodule WarGear.Turns do
+defmodule Wargear.Turns do
 
   defmodule Turn do
     defstruct id: nil, type: nil, player: nil, datetime: nil, seat: nil, action: nil, bonus_units: nil, trade_units: nil, attacker: nil, defender: nil, ad: nil, dd: nil, bmod: nil, al: nil, dl: nil
   end
 
   def get(start_id, end_id) do
-    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/729478")
+    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/730533")
 
-    {:ok, now} = DateTime.now("Etc/UTC")
-    File.write!("lib/wargear/logs/#{DateTime.to_string(now)}", body)
+    # {:ok, now} = DateTime.now("Etc/UTC")
+    # File.write!("lib/wargear/logs/#{DateTime.to_string(now)}", body)
 
     turns = 
       Floki.parse_document!(body) 
@@ -25,6 +25,12 @@ defmodule WarGear.Turns do
     else
       Enum.filter(turns, fn t -> t.id <= end_id end)
     end
+  end
+
+  def latest_turn_start do
+    get(0, nil)
+    |> Enum.filter(fn turn -> turn.type == :turn_start end)
+    |> Enum.at(-1)
   end
 
   defp get_type(action) do

@@ -1,18 +1,17 @@
 defmodule Wargear do
-  @moduledoc """
-  Documentation for Wargear.
-  """
+  use Application
 
-  @doc """
-  Hello world.
+  def start(_,_) do
+    import Supervisor.Spec
+    
+    children = [
+      # supervisor(Wargear.Repo, []),
+      # supervisor(Wargear.Endpoint, []),
+      worker(Wargear.Periodically, [])
+    ]
+    
+    opts = [strategy: :one_for_one, name: Wargear.Supervisor]
 
-  ## Examples
-
-      iex> Wargear.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    Supervisor.start_link(children, opts)
   end
 end

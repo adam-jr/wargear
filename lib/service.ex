@@ -1,4 +1,4 @@
-defmodule WarGear.Service do  
+defmodule Wargear.Service do  
   
   # def run do
   #   players = Map.values(get_players())
