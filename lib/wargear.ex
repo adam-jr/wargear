@@ -7,7 +7,7 @@ defmodule Wargear do
     children = [
       # supervisor(Wargear.Repo, []),
       # supervisor(Wargear.Endpoint, []),
-      worker(Wargear.Periodically, [])
+      worker(Wargear.Periodically, [run: Application.get_env(:wargear, :periodically)[:run]])
     ]
     
     opts = [strategy: :one_for_one, name: Wargear.Supervisor]

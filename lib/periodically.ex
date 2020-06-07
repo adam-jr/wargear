@@ -7,13 +7,14 @@ defmodule Wargear.Periodically do
   @filename 'periodically.txt'
   @interval 1 * 60 * 1000 # 1 minute
 
-  def start_link do
-    GenServer.start_link(__MODULE__, %{})
+  def start_link({:run, run}) do
+    GenServer.start_link(__MODULE__, run)
   end
 
-  def init(state) do
+  def init(false), do: {:ok, false}
+  def init(true) do
     schedule_work() # Schedule work to be performed at some point
-    {:ok, state}
+    {:ok, true}
   end
 
   def handle_info(:work, state) do
@@ -44,7 +45,7 @@ defmodule Wargear.Periodically do
     horizon = 
       NaiveDateTime.utc_now()
       |> Timex.to_datetime() 
-      |> Timex.shift(hours: -4, minutes: -30) #-4 hours for utc shift...
+      |> Timex.shift(hours: -4) #-4 hours for utc shift...
 
     case Timex.parse(datetime, "%B %-d, %Y %-I:%M %p", :strftime) do
       {:ok, naive} -> Timex.to_datetime(naive) |> Timex.before?(horizon)

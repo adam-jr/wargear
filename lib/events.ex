@@ -1,6 +1,10 @@
-defmodule Wargear.Turns do
+defmodule Wargear.Player do
+  defstruct name: nil, units: 33, territories: 11
+end
 
-  defmodule Turn do
+defmodule Wargear.Events do
+
+  defmodule Event do
     defstruct id: nil, type: nil, player: nil, datetime: nil, seat: nil, action: nil, bonus_units: nil, trade_units: nil, attacker: nil, defender: nil, ad: nil, dd: nil, bmod: nil, al: nil, dl: nil
   end
 
@@ -10,22 +14,22 @@ defmodule Wargear.Turns do
     # {:ok, now} = DateTime.now("Etc/UTC")
     # File.write!("lib/wargear/logs/#{DateTime.to_string(now)}", body)
 
-    turns = 
+    events = 
       Floki.parse_document!(body) 
       |> Floki.find("tr.row_dark")
-      |> Enum.map(&to_turn/1)
+      |> Enum.map(&to_event/1)
       |> Enum.filter(fn t -> t.id >= start_id end)
 
     if (is_nil(end_id)) do
-      turns
+      events
     else
-      Enum.filter(turns, fn t -> t.id <= end_id end)
+      Enum.filter(events, fn t -> t.id <= end_id end)
     end
   end
 
-  def latest_turn_start do
+  def latest_event_start do
     get(0, nil)
-    |> Enum.filter(fn turn -> turn.type == :turn_start end)
+    |> Enum.filter(fn event -> event.type == :event_start end)
     |> Enum.at(-1)
   end
 
@@ -50,12 +54,12 @@ defmodule Wargear.Turns do
     end
   end
 
-  defp to_turn({"tr", [{"class", "row_dark"}], children}) do
+  defp to_event({"tr", [{"class", "row_dark"}], children}) do
     [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] = Enum.map(children, fn {_, _, val} -> val end)
 
     {att, def} = get_sides(action)
 
-    %Turn{
+    %Event{
       id: String.to_integer(id),
       type: get_type(action),
       player: get_player(action),

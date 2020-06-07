@@ -1,13 +1,38 @@
 defmodule Wargear.Messenger do
 
   def notify_of_turn(player_name) do
-    url = Application.get_env(:wargear, :url)[:slack_webhook]
-    headers = [{"Content-Type", "application/json"}]
-    body = Poison.encode!(%{text: "<#{slack_name(player_name)}>, it's your turn"})
+    %{text: "<#{slack_name(player_name)}>, it's your turn"}
+    |> post_to_slack()
+  end
+
+  defp post_to_slack(body) do
+    url = url(:post_message)
+    headers = headers()
+    channel = Application.get_env(:wargear, :slack_app)[:channel]
+
+    body = 
+      body
+      |> Map.put(:channel, channel) 
+      |> Poison.encode!()
+
     HTTPoison.post!(url, body, headers)
   end
 
-  def slack_name(player_name) do
+  defp url(endpoint) do
+    config = Application.get_env(:wargear, :slack_app)
+
+    config[:base_url]
+    |> Path.join(config[:endpoints][endpoint])
+  end
+
+  defp headers do
+    token = Application.get_env(:wargear, :slack_app)[:auth_token]
+    [{"Content-Type", "application/json"}, 
+    {"Authorization", "Bearer #{token}"}]
+  end
+
+
+  defp slack_name(player_name) do
     case player_name do
       "adam jormp jomp"    -> "@atom.r"
       "pants off vant hof" -> "@cvanthof85"
