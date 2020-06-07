@@ -11,18 +11,18 @@ defmodule Wargear.Stats do
     "ZachClash"          => %Player{name: "ZachClash"}
   }
 
-  def get_standings(turn \\ nil) do
-    Enum.reduce(Wargear.Turns.get(0, turn), @initialized_players, fn turn, players -> 
-      case turn.type do
-        :unit_receive -> add_units(players, turn.player, turn.bonus_units)
-        :card_trade -> add_units(players, turn.player, turn.trade_units)
+  def get_standings do
+    Enum.reduce(Wargear.Events.get(), @initialized_players, fn event, players -> 
+      case event.type do
+        :unit_receive -> add_units(players, event.player, event.bonus_units)
+        :card_trade -> add_units(players, event.player, event.trade_units)
         :attack ->
           players
-          |> kill_units(turn.defender, turn.dl)
-          |> kill_units(turn.attacker, turn.al)
+          |> kill_units(event.defender, event.dl)
+          |> kill_units(event.attacker, event.al)
         :occupy ->
           players
-          |> exchange_territory(turn.attacker, turn.defender)
+          |> exchange_territory(event.attacker, event.defender)
         _ -> players
       end
     end)

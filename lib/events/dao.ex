@@ -3,17 +3,26 @@ defmodule Wargear.Events.Dao do
   @events_key :events
   @filename 'events.txt'
 
-  def insert!(events) do
-    {:ok, events} = insert(events)
-    events
-  end
+  def update(events) do
+    stored_latest_id = 
+      get(0) 
+      |> Enum.at(-1)
+      |> Map.get(:id)
 
-  def insert(events) do
-    case dets_insert(@events_key, events) do
-      :ok -> {:ok, events}
-      {:error, reason} -> {:error, reason}
+    incoming_latest_id =
+      events
+      |> Enum.at(-1)
+      |> Map.get(:id)
+
+    if incoming_latest_id > stored_latest_id do
+      insert(events)
+      :update
+    else
+      :noop
     end
   end
+
+  def insert(events), do: dets_insert(@events_key, events)
 
   def get(start_id, limit \\ nil) do
     dets_lookup(@events_key, [])
