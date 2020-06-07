@@ -13,16 +13,16 @@ defmodule Wargear.Events.Poller do
 
   def init(false), do: {:ok, false}
   def init(true) do
-    schedule_work(@initial_state) # Schedule work to be performed at some point
+    schedule_work(@initial_state)
     {:ok, @initial_state}
   end
 
   def handle_info(:work, state) do
-    schedule_work(state) # Reschedule once more
-
     event_action = update_events()
 
     state = update(state, event_action)
+
+    schedule_work(state)
 
     {:noreply, state}
   end
