@@ -1,4 +1,4 @@
-defmodule Wargear.Periodically do
+defmodule Wargear.Events.Poller do
   use GenServer
   alias Wargear.Events
 
