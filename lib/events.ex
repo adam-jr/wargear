@@ -8,29 +8,12 @@ defmodule Wargear.Events do
     defstruct id: nil, type: nil, player: nil, datetime: nil, seat: nil, action: nil, bonus_units: nil, trade_units: nil, attacker: nil, defender: nil, ad: nil, dd: nil, bmod: nil, al: nil, dl: nil
   end
 
-  def get(start_id, end_id) do
+  def get do
     %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/730533")
 
-    # {:ok, now} = DateTime.now("Etc/UTC")
-    # File.write!("lib/wargear/logs/#{DateTime.to_string(now)}", body)
-
-    events = 
-      Floki.parse_document!(body) 
-      |> Floki.find("tr.row_dark")
-      |> Enum.map(&to_event/1)
-      |> Enum.filter(fn t -> t.id >= start_id end)
-
-    if (is_nil(end_id)) do
-      events
-    else
-      Enum.filter(events, fn t -> t.id <= end_id end)
-    end
-  end
-
-  def latest_event_start do
-    get(0, nil)
-    |> Enum.filter(fn event -> event.type == :event_start end)
-    |> Enum.at(-1)
+    Floki.parse_document!(body) 
+    |> Floki.find("tr.row_dark")
+    |> Enum.map(&to_event/1)
   end
 
   defp get_type(action) do
