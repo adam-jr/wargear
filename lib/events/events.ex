@@ -31,6 +31,7 @@ defmodule Wargear.Events do
       {_, _, [_, " placed " <> _rest]}      -> :unit_place
       {_, _, [_, " received " <> _rest]}    -> :unit_receive
       {_, _, [_, " transferred " <> _rest]} -> :unit_transfer
+      {_, _, ["Fogged"]}                    -> :fogged
       _ ->
         IO.inspect action
         nil
@@ -38,27 +39,34 @@ defmodule Wargear.Events do
   end
 
   defp to_event({"tr", [{"class", "row_dark"}], children}) do
-    [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] = Enum.map(children, fn {_, _, val} -> val end)
+    [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] = Enum.map(children, fn {_, _, val} -> val end) |> IO.inspect
 
     {att, def} = get_sides(action)
 
-    %Event{
-      id: String.to_integer(id),
-      type: get_type(action),
-      player: get_player(action),
-      datetime: dt,
-      seat: String.to_integer(seat),
-      action: action,
-      bonus_units: get_bonus_units(action),
-      trade_units: get_trade_units(action),
-      attacker: att,
-      defender: def,
-      ad: get_hd(ad),
-      dd: get_hd(dd),
-      bmod: bmod,
-      al: get_hd(al) |> String.to_integer(),
-      dl: get_hd(dl) |> String.to_integer()
-    }
+    case get_type(action) do
+      :fogged -> %Event{
+        id: String.to_integer(id),
+        type: get_type(action),
+        datetime: dt
+      }
+      _ -> %Event{
+        id: String.to_integer(id),
+        type: get_type(action),
+        player: get_player(action),
+        datetime: dt,
+        seat: String.to_integer(seat),
+        action: action,
+        bonus_units: get_bonus_units(action),
+        trade_units: get_trade_units(action),
+        attacker: att,
+        defender: def,
+        ad: get_hd(ad),
+        dd: get_hd(dd),
+        bmod: bmod,
+        al: get_hd(al) |> String.to_integer(),
+        dl: get_hd(dl) |> String.to_integer()
+      }
+    end
   end
 
   defp get_player(action) do

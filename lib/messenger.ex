@@ -1,7 +1,7 @@
 defmodule Wargear.Messenger do
 
   def notify_of_turn(player_name) do
-    %{text: "<#{slack_name(player_name)}>, it's your turn"}
+    %{text: "<#{slack_name(player_name)}>, WHO NAMED YOU? SOME HALFWIT WITH A STUTTER?? GODS, IT'S YOUR TURN!!!"}
     |> post_to_slack()
   end
 

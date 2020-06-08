@@ -8,8 +8,17 @@ defmodule Wargear.Events.Handler do
     def get, do: Dets.lookup(@table, @key, 0)
   end
 
+  defmodule CurrentTurnDao do
+    alias Wargear.Dets
+    @table :turn_info
+    @key :current_player
+    def update(player), do: Dets.insert(@table, @key, player)
+    def get, do: Dets.lookup(@table, @key, nil)
+  end
+
   use GenServer
   alias Wargear.Events.Dao, as: EventsDao
+  alias Wargear.Turns
 
   @active_interval 1000 # 1 second
   @initial_state :active
@@ -32,6 +41,7 @@ defmodule Wargear.Events.Handler do
       events ->
         update_last_viewed_event(events)
         handle(events)
+        notify_current_player()
     end
     
     # state = update(state, event_action)
@@ -41,15 +51,26 @@ defmodule Wargear.Events.Handler do
     {:noreply, state}
   end
 
+  defp notify_current_player do
+    current = Turns.get_current_player()
+    last_current = CurrentTurnDao.get()
+
+    if current != last_current do
+      CurrentTurnDao.update(current)
+      Wargear.Messenger.notify_of_turn(current)
+    end
+  end
+
   defp schedule_work(:active), do: Process.send_after(self(), :work, @active_interval)
 
   defp handle(events) do
-    player =
-      Enum.filter(events, &(&1.type == :turn_start))
-      |> Enum.at(-1)
-      |> Map.get(:player)
+    # player =
+    #   Enum.filter(events, &(&1.type == :turn_start))
+    #   |> Enum.at(-1)
+    #   |> Map.get(:player)
 
-    Wargear.Messenger.notify_of_turn(player)
+    # Wargear.Messenger.notify_of_turn(player)
+    events
   end
 
   defp update_last_viewed_event(events) do
