@@ -11,7 +11,7 @@ defmodule Wargear.Events.Poller do
     GenServer.start_link(__MODULE__, run)
   end
 
-  def init(false), do: {:ok, false}
+  def init(false), do: {:ok, nil}
   def init(true) do
     schedule_work(@initial_state)
     {:ok, @initial_state}
@@ -38,7 +38,7 @@ defmodule Wargear.Events.Poller do
   defp update(state, event_action) do
     case {event_action, state} do
       {:update, _}           -> @initial_state
-      {:noop, {:active, 10}} -> @idle_state
+      {:noop, {:active, 60}} -> @idle_state
       {:noop, {:active, n}}  -> {:active, n + 1}
       {:noop, _idle_state}   -> @idle_state
     end

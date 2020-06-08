@@ -1,13 +1,15 @@
 defmodule Wargear.Events.Dao do
+  alias Wargear.Dets
+
   @table :event_info
-  @events_key :events
-  @filename 'events.txt'
+  @key :events
 
   def update(events) do
     stored_latest_id = 
-      get(0) 
-      |> Enum.at(-1)
-      |> Map.get(:id)
+      case get(0) do
+        [] -> 0
+        stored -> Enum.at(stored, -1) |> Map.get(:id)
+      end
 
     incoming_latest_id =
       events
@@ -22,10 +24,10 @@ defmodule Wargear.Events.Dao do
     end
   end
 
-  def insert(events), do: dets_insert(@events_key, events)
+  def insert(events), do: Dets.insert(@table, @key, events)
 
   def get(start_id, limit \\ nil) do
-    dets_lookup(@events_key, [])
+    Dets.lookup(@table, @key, [])
     |> Enum.filter(&(&1.id >= start_id))
     |> (fn events -> 
       case limit do
@@ -33,26 +35,6 @@ defmodule Wargear.Events.Dao do
         val -> Enum.take(events, val)
       end
     end).()
-  end
-
-  defp dets_insert(key, val) do
-    :dets.open_file(@table, [{:file, @filename}])
-    :dets.insert(@table, {key, val})
-    :dets.close(@table)
-  end
-
-  defp dets_lookup(key, default) do
-    :dets.open_file(@table, [{:file, @filename}])
-
-    val = 
-      case :dets.lookup(@table, key) do
-        [{^key, val}] -> val
-        _ -> default
-      end
-
-    :dets.close(@table)
-
-    val
   end
 
 end
