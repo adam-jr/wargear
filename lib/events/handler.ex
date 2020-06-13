@@ -81,9 +81,9 @@ defmodule Wargear.Events.Handler do
     [current] = Enum.filter(players, &(&1.current))
     last_current = CurrentTurnDao.get()
 
-    if current != last_current do
-      CurrentTurnDao.update(current)
-      Wargear.Messenger.notify_of_turn(current)
+    if current.name != last_current do
+      CurrentTurnDao.update(current.name)
+      Wargear.Messenger.notify_of_turn(current.name)
     end
   end
 
