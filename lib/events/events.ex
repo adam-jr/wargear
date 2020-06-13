@@ -16,8 +16,8 @@ defmodule Wargear.Events do
     |> Enum.map(&to_event/1)
   end
 
-  defp get_type(action) do
-    case action do
+  defp get_type(event) do
+    case event do
       {_, _, [_, " attacked ", _, _]}       -> :attack
       {_, _, [_, " awarded " <> _rest]}     -> :card_award
       {_, _, [_, " captured " <> _rest, _]} -> :card_capture
@@ -33,7 +33,7 @@ defmodule Wargear.Events do
       {_, _, [_, " transferred " <> _rest]} -> :unit_transfer
       {_, _, ["Fogged"]}                    -> :fogged
       _ ->
-        IO.inspect action
+        IO.inspect event, label: "unrecognized event"
         nil
     end
   end
