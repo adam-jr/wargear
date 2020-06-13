@@ -1,5 +1,6 @@
 defmodule Wargear.Events.Dao do
   alias Wargear.Dets
+  require Logger
 
   @table :event_info
   @key :events
@@ -17,9 +18,11 @@ defmodule Wargear.Events.Dao do
       |> Map.get(:id)
 
     if incoming_latest_id > stored_latest_id do
+      Logger.info("New events have been generated. Inserting to event store...")
       insert(events)
       :update
     else
+      Logger.info("No new events.")
       :noop
     end
   end

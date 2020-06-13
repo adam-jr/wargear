@@ -27,6 +27,7 @@ defmodule Wargear.Events.Handler do
   use GenServer
   alias Wargear.Events.Dao, as: EventsDao
   alias Wargear.ViewScreen
+  require Logger
 
   @active_interval 1000 # 1 second
   @initial_state :active
@@ -37,6 +38,7 @@ defmodule Wargear.Events.Handler do
 
   def init(false), do: {:ok, nil}
   def init(true) do
+    Logger.info("Initializing event store watcher, polling every #{@active_interval / 1000} second(s)...")
     schedule_work(@initial_state)
     {:ok, @initial_state}
   end
@@ -47,9 +49,11 @@ defmodule Wargear.Events.Handler do
     case EventsDao.get(last_viewed_event_id + 1) do
       [] -> :noop
       events ->
+        Logger.info("Event store watcher sees new events. Triggering work...")
         update_last_viewed_event(events)
         handle(events)
         perform_view_screen_updates()
+        Logger.info("Event store watcher Done.")
     end
     
     schedule_work(state)
@@ -70,6 +74,7 @@ defmodule Wargear.Events.Handler do
 
     case Enum.reject(current_dead, &(&1 in last_dead)) do
       [new_dead] ->
+        Logger.info("Notifying of #{current_dead}'s death... :('")
         DeadDao.update(current_dead)
         Wargear.Messenger.notify_newly_dead(new_dead)
       [] -> :noop
@@ -82,6 +87,7 @@ defmodule Wargear.Events.Handler do
     last_current = CurrentTurnDao.get()
 
     if current.name != last_current do
+      Logger.info("Notifying #{current.name} of turn...")
       CurrentTurnDao.update(current.name)
       Wargear.Messenger.notify_of_turn(current.name)
     end
@@ -102,6 +108,10 @@ defmodule Wargear.Events.Handler do
   defp update_last_viewed_event(events) do
     Enum.at(events, -1)
     |> Map.get(:id)
+    |> (fn id ->
+      Logger.info("Setting last viewed event id = #{id}...")
+      id
+    end).()
     |> HandlerDao.update()
   end
 

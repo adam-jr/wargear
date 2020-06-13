@@ -1,8 +1,11 @@
 defmodule Wargear do
   use Application
+  require Logger
 
   def start(_,_) do
     import Supervisor.Spec
+
+    Logger.info("Starting Wargear!!!")
     
     children = [
       # supervisor(Wargear.Repo, []),

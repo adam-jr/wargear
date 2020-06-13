@@ -1,6 +1,7 @@
 defmodule Wargear.Events.Poller do
   use GenServer
   alias Wargear.Events
+  require Logger
 
   @idle_interval  10 * 60 * 1000 # 10 minutes
   @active_interval 1 * 60 * 1000 # 1 minute
@@ -18,6 +19,7 @@ defmodule Wargear.Events.Poller do
   end
 
   def handle_info(:work, state) do
+    Logger.info("Polling for new events...")
     event_action = update_events()
 
     state = update(state, event_action)
