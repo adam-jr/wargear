@@ -39,7 +39,7 @@ defmodule Wargear.Events do
   end
 
   defp to_event({"tr", [{"class", "row_dark"}], children}) do
-    [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] = Enum.map(children, fn {_, _, val} -> val end) |> IO.inspect
+    [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] = Enum.map(children, fn {_, _, val} -> val end)
 
     {att, def} = get_sides(action)
 
