@@ -8,8 +8,18 @@ defmodule Wargear.Events do
     defstruct id: nil, type: nil, player: nil, datetime: nil, seat: nil, action: nil, bonus_units: nil, trade_units: nil, attacker: nil, defender: nil, ad: nil, dd: nil, bmod: nil, al: nil, dl: nil
   end
 
+  def url do
+    base = Application.get_env(:wargear, :base_url)
+    endpoint = Application.get_env(:wargear, :endpoints)[:game_log]
+    game_id = Application.get_env(:wargear, :game_id)
+    
+    base
+    |> Path.join(endpoint) 
+    |> Path.join(game_id)
+  end
+
   def get do
-    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/731327")
+    %{body: body} = HTTPoison.get!(url())
 
     Floki.parse_document!(body) 
     |> Floki.find("tr.row_dark")

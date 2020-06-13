@@ -7,6 +7,7 @@ defmodule Wargear.Events.Poller do
   @active_interval 1 * 60 * 1000 # 1 minute
   @initial_state {:active, 0} # {mode, cycles}
   @idle_state    {:idle, 0}   # {mode, cycles}
+  @active_cycle_limit 60
 
   def start_link({:run, run}) do
     GenServer.start_link(__MODULE__, run)
@@ -14,17 +15,18 @@ defmodule Wargear.Events.Poller do
 
   def init(false), do: {:ok, nil}
   def init(true) do
+    Logger.info("Initializing Events Poller...")
     schedule_work(@initial_state)
     {:ok, @initial_state}
   end
 
   def handle_info(:work, state) do
+    schedule_work(state)
+
     Logger.info("Polling for new events...")
     event_action = update_events()
 
     state = update(state, event_action)
-
-    schedule_work(state)
 
     {:noreply, state}
   end
@@ -39,8 +41,12 @@ defmodule Wargear.Events.Poller do
 
   defp update(state, event_action) do
     case {event_action, state} do
-      {:update, _}           -> @initial_state
-      {:noop, {:active, 60}} -> @idle_state
+      {:update, _}           ->
+        Logger.info("Event Poller Switching to active state!")
+        @initial_state
+      {:noop, {:active, @active_cycle_limit}} ->
+        Logger.info("#{@active_cycle_limit} cycles with no new events. Event Poller Switching to idle state.")
+        @idle_state
       {:noop, {:active, n}}  -> {:active, n + 1}
       {:noop, _idle_state}   -> @idle_state
     end
