@@ -1,5 +1,5 @@
 defmodule Wargear.Player do
-  defstruct name: nil, units: 33, territories: 11
+  defstruct name: nil, units: 33, territories: 11, current: false, eliiminated: false
 end
 
 defmodule Wargear.Events do
