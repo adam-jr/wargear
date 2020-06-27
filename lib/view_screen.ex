@@ -5,7 +5,7 @@ defmodule Wargear.ViewScreen do
   end
 
   def get_players do
-    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/view/731327")
+    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/view/735293")
 
     Floki.parse_document!(body) 
     |> Floki.find("div#playerstats")

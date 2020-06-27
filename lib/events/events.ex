@@ -9,7 +9,7 @@ defmodule Wargear.Events do
   end
 
   def get do
-    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/731327")
+    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/735293")
 
     Floki.parse_document!(body) 
     |> Floki.find("tr.row_dark")
