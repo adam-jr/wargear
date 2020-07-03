@@ -8,8 +8,10 @@ defmodule Wargear.Events do
     defstruct id: nil, type: nil, player: nil, datetime: nil, seat: nil, action: nil, bonus_units: nil, trade_units: nil, attacker: nil, defender: nil, ad: nil, dd: nil, bmod: nil, al: nil, dl: nil
   end
 
+  def game_id, do: "735293"
+
   def get do
-    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/735293")
+    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/#{game_id()}")
 
     Floki.parse_document!(body) 
     |> Floki.find("tr.row_dark")

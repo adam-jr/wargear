@@ -2,13 +2,13 @@ defmodule Wargear.Messenger do
 
   def notify_newly_dead(player_name) do
     %{text: 
-        "<#{slack_name(player_name)}> went down the drain counterclockwise, better luck next time mate"
+        "<#{slack_name(player_name)}> is dead"
       }
       |> post_to_slack()
   end
 
   def notify_of_turn(player_name) do
-    %{text: "You call that a turn?? THIS is a turn! Oi, <#{slack_name(player_name)}>"}
+    %{text: "<#{slack_name(player_name)}>, you're up"}
     |> post_to_slack()
   end
 

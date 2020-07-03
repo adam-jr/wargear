@@ -34,6 +34,7 @@ defmodule Wargear.Events.Poller do
 
   defp update_events do
     events = Events.get()
+    players = Warger.ViewScreen.get_players()
     Events.Dao.update(events)
   end
 
