@@ -50,15 +50,15 @@ defmodule Wargear.Events.Handler do
   end
 
   def handle_info(:work, state) do
-    # last_viewed_event_id = HandlerDao.last_event_id()
+    last_viewed_event_id = HandlerDao.last_event_id()
 
-    # case EventsDao.get(last_viewed_event_id + 1) do
-    #   [] -> :noop
-    #   events ->
-    # update_last_viewed_event(events)
-    # handle(events)
-    perform_view_screen_updates()
-    # end
+    case EventsDao.get(last_viewed_event_id + 1) do
+      [] -> :noop
+      events ->
+        update_last_viewed_event(events)
+        handle(events)
+        perform_view_screen_updates()
+    end
     
     schedule_work(state)
 
