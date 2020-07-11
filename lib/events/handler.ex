@@ -35,7 +35,7 @@ defmodule Wargear.Events.Handler do
   alias Wargear.ViewScreen
   require Logger
 
-  @active_interval 60 * 1000 # 1 min
+  @active_interval 1000 # 1 second
   @initial_state :active
 
   def start_link({:run, run}) do
