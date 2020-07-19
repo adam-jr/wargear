@@ -18,6 +18,8 @@ defmodule Wargear.Events do
     |> Path.join(game_id)
   end
 
+  def game_id, do: "738718"
+
   def get do
     %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/#{game_id()}")
 
