@@ -19,7 +19,7 @@ defmodule Wargear.Events.Dao do
       |> Map.get(:id)
 
     if incoming_latest_id > stored_latest_id do
-      Logger.info("New events have been generated. Inserting to event store...")
+      Logger.info("New events! Inserting to event store...")
       insert(events)
       :update
     else

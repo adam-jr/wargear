@@ -7,8 +7,16 @@ defmodule Wargear.Events do
   defmodule Event do
     defstruct id: nil, type: nil, player: nil, datetime: nil, seat: nil, action: nil, bonus_units: nil, trade_units: nil, attacker: nil, defender: nil, ad: nil, dd: nil, bmod: nil, al: nil, dl: nil
   end
-
-  def game_id, do: "738718"
+  
+  def url do
+    base = Application.get_env(:wargear, :base_url)
+    endpoint = Application.get_env(:wargear, :endpoints)[:game_log]
+    game_id = Application.get_env(:wargear, :game_id)
+    
+    base
+    |> Path.join(endpoint) 
+    |> Path.join(game_id)
+  end
 
   def get do
     %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/#{game_id()}")
