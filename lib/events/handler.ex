@@ -30,6 +30,16 @@ defmodule Wargear.Events.Handler do
     def reset, do: Dets.insert(@table, @key, @initial_state)
   end
 
+  defmodule GameDao do
+    alias Wargear.Dets
+    @table :game_info
+    @key :game_id
+    @initial_state nil
+    def update(game_id), do: Dets.insert(@table, @key, game_id)
+    def get, do: Dets.lookup(@table, @key, @initial_state)
+    def reset, do: Dets.insert(@table, @key, @initial_state)
+  end
+
   use GenServer
   alias Wargear.Events.Dao, as: EventsDao
   alias Wargear.ViewScreen

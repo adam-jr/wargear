@@ -26,6 +26,7 @@ defmodule Wargear.MixProject do
       {:absinthe_plug, "~> 1.5.0"},
       {:floki, "~> 0.26.0"},
       {:httpoison, "~> 1.6"},
+      {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 3.1"},
       {:timex, "~> 3.1"}

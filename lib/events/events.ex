@@ -18,7 +18,11 @@ defmodule Wargear.Events do
     |> Path.join(game_id)
   end
 
-  def game_id, do: "738718"
+  def set_game(game_id) do
+    Wargear.Events.Handler.GameDao.update(game_id)
+  end
+
+  def game_id, do:  Wargear.Events.Handler.GameDao.get()
 
   def get do
     %{body: body} = HTTPoison.get!("http://www.wargear.net/games/log/#{game_id()}")
