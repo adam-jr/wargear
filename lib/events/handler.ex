@@ -4,24 +4,30 @@ defmodule Wargear.Events.Handler do
     alias Wargear.Dets
     @table :event_info
     @key :last_viewed_event_id
+    @initial_state 0
     def update(event_id), do: Dets.insert(@table, @key, event_id)
-    def last_event_id, do: Dets.lookup(@table, @key, 0)
+    def last_event_id, do: Dets.lookup(@table, @key, @initial_state)
+    def reset, do: Dets.insert(@table, @key, @initial_state)
   end
 
   defmodule CurrentTurnDao do
     alias Wargear.Dets
     @table :turn_info
     @key :current_player
+    @initial_state nil
     def update(player), do: Dets.insert(@table, @key, player)
-    def get, do: Dets.lookup(@table, @key, nil)
+    def get, do: Dets.lookup(@table, @key, @initial_state)
+    def reset, do: Dets.insert(@table, @key, @initial_state)
   end
 
   defmodule DeadDao do
     alias Wargear.Dets
     @table :turn_info
     @key :dead_players
+    @initial_state []
     def update(players), do: Dets.insert(@table, @key, players)
-    def get, do: Dets.lookup(@table, @key, [])
+    def get, do: Dets.lookup(@table, @key, @initial_state)
+    def reset, do: Dets.insert(@table, @key, @initial_state)
   end
 
   use GenServer
@@ -49,11 +55,9 @@ defmodule Wargear.Events.Handler do
     case EventsDao.get(last_viewed_event_id + 1) do
       [] -> :noop
       events ->
-        Logger.info("Event store watcher sees new events. Triggering work...")
         update_last_viewed_event(events)
         handle(events)
         perform_view_screen_updates()
-        Logger.info("Event store watcher Done.")
     end
     
     schedule_work(state)

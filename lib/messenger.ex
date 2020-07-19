@@ -2,16 +2,13 @@ defmodule Wargear.Messenger do
 
   def notify_newly_dead(player_name) do
     %{text: 
-        "They never tell you how they all shit themselves... They don't put that part in the songs. Stupid boy. " <> 
-        "Now the <#{slack_name(player_name)}>s bend the knee like everyone else. He could have lingered on the edge of the battle with the " <> 
-        "smart boys, and today his wife would be making him miserable, his sons would be ingrates, and he'd be waking " <> 
-        "three times in the night to piss into a bowl... WINE!!!"
+        "<#{slack_name(player_name)}> is dead"
       }
       |> post_to_slack()
   end
 
   def notify_of_turn(player_name) do
-    %{text: "<#{slack_name(player_name)}>, WHO NAMED YOU? SOME HALFWIT WITH A STUTTER?? GODS, IT'S YOUR TURN!!!"}
+    %{text: "<#{slack_name(player_name)}>, you're up"}
     |> post_to_slack()
   end
 

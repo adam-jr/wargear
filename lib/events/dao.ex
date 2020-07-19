@@ -4,6 +4,7 @@ defmodule Wargear.Events.Dao do
 
   @table :event_info
   @key :events
+  @initial_state []
 
   def update(events) do
     stored_latest_id = 
@@ -30,7 +31,7 @@ defmodule Wargear.Events.Dao do
   def insert(events), do: Dets.insert(@table, @key, events)
 
   def get(start_id, limit \\ nil) do
-    Dets.lookup(@table, @key, [])
+    Dets.lookup(@table, @key, @initial_state)
     |> Enum.filter(&(&1.id >= start_id))
     |> (fn events -> 
       case limit do
@@ -39,5 +40,7 @@ defmodule Wargear.Events.Dao do
       end
     end).()
   end
+
+  def reset, do: insert(@initial_state)
 
 end

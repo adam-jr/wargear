@@ -22,8 +22,11 @@ defmodule Wargear.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:absinthe, "~> 1.5.0"},
+      {:absinthe_plug, "~> 1.5.0"},
       {:floki, "~> 0.26.0"},
       {:httpoison, "~> 1.6"},
+      {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 3.1"},
       {:timex, "~> 3.1"}
     ]

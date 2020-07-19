@@ -20,6 +20,13 @@ defmodule Wargear.Events.Poller do
     {:ok, @initial_state}
   end
 
+  def reset do
+    Events.Dao.reset()
+    Events.Handler.HandlerDao.reset()
+    Events.Handler.CurrentTurnDao.reset()
+    Events.Handler.DeadDao.reset()
+  end
+
   def handle_info(:work, state) do
     schedule_work(state)
 
