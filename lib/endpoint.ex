@@ -5,9 +5,6 @@ defmodule Wargear.Endpoint do
   plug Plug.Parsers, parsers: [:json, Absinthe.Plug.Parser], json_decoder: Poison
   plug :match
   plug :dispatch
-  
-  plug Absinthe.Plug,
-    schema: Wargear.Schema
 
   def init(options) do
     options
