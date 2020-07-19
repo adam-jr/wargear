@@ -9,7 +9,7 @@ defmodule Wargear do
     
     children = [
       # supervisor(Wargear.Repo, []),
-      # supervisor(Wargear.Endpoint, []),
+      supervisor(Wargear.Endpoint, []),
       worker(Wargear.Events.Poller, [run: Application.get_env(:wargear, :events_poller  )[:run]]),
       worker(Wargear.Events.Handler, [run: Application.get_env(:wargear, :events_handler)[:run]])
     ]
