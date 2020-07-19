@@ -15,7 +15,7 @@ defmodule Wargear.Endpoint do
 
   def start_link do
     # NOTE: This starts Cowboy listening on the default port of 4000
-    {:ok, _} = Plug.Adapters.Cowboy.http(__MODULE__, [], port: 80)
+    {:ok, _} = Plug.Adapters.Cowboy.http(__MODULE__, [], port: 8080)
   end
 
   forward "/api", to: Absinthe.Plug,
