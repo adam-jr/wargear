@@ -22,7 +22,7 @@ defmodule Wargear.Endpoint do
     forward "/graphiql", to: Absinthe.Plug.GraphiQL, schema: Wargear.Schema
     get "/ping", do: send_resp(conn, 200, "pong!")
     post "/new" do
-      IO.inspect Map.keys(conn)
+      IO.inspect conn.body_params
       send_resp(conn, 200, Poison.encode!(%{}))
     end
   end
