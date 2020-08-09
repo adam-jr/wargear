@@ -23,7 +23,7 @@ defmodule Wargear.Endpoint do
     get "/ping", do: send_resp(conn, 200, "pong!")
     post "/game" do
       IO.inspect conn
-      send_resp(conn, 200, "new game!")
+      send_resp(conn, 200, Poison.encode!(%{}))
     end
   end
 
