@@ -17,9 +17,17 @@ defmodule Wargear.Endpoint do
 
   forward "/api", to: Absinthe.Plug,
     schema: Wargear.Schema
+
+  post "/new" do
+    IO.inspect conn
+    # Wargear.Resolver.Game
+    send_resp(conn, 200, "yay")
+  end
   
   if Mix.env == :dev do
     forward "/graphiql", to: Absinthe.Plug.GraphiQL, schema: Wargear.Schema
     get "/ping", do: send_resp(conn, 200, "pong!")
   end
+
+  
 end
