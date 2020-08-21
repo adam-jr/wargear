@@ -14,7 +14,7 @@ defmodule Wargear.Dets do
 
     val = 
       case :dets.lookup(table, atom_key) do
-        [{^key, val}] -> val
+        [{^atom_key, val}] -> val
         _ -> default
       end
 
