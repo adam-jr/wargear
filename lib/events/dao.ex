@@ -2,13 +2,12 @@ defmodule Wargear.Events.Dao do
   alias Wargear.Dets
   require Logger
 
-  @table :event_info
-  @key :events
+  @table :events
   @initial_state []
 
-  def update(events) do
+  def update(events, game_id) do
     stored_latest_id = 
-      case get(0) do
+      case get(0, nil, game_id) do
         [] -> 0
         stored -> Enum.at(stored, -1) |> Map.get(:id)
       end
@@ -20,7 +19,7 @@ defmodule Wargear.Events.Dao do
 
     if incoming_latest_id > stored_latest_id do
       Logger.info("New events! Inserting to event store...")
-      insert(events)
+      insert(events, game_id)
       :update
     else
       Logger.info("No new events.")
@@ -28,10 +27,10 @@ defmodule Wargear.Events.Dao do
     end
   end
 
-  def insert(events), do: Dets.insert(@table, @key, events)
+  def insert(events, game_id), do: Dets.insert(@table, game_id, events)
 
-  def get(start_id, limit \\ nil) do
-    Dets.lookup(@table, @key, @initial_state)
+  def get(start_id, limit \\ nil, game_id) do
+    Dets.lookup(@table, game_id, @initial_state)
     |> Enum.filter(&(&1.id >= start_id))
     |> (fn events -> 
       case limit do
@@ -41,6 +40,6 @@ defmodule Wargear.Events.Dao do
     end).()
   end
 
-  def reset, do: insert(@initial_state)
+  def reset(game_id), do: insert(@initial_state, game_id)
 
 end

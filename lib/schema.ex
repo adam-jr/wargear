@@ -7,8 +7,12 @@ defmodule Wargear.Schema do
   mutation do
     field :new_game, type: :boolean do
       arg :game_id, non_null(:string)
+      resolve &Wargear.Resolver.Game.new/2
+    end
 
-      resolve &Wargear.Resolver.Game.new_game/2
+    field :kill_game, type: :boolean do
+      arg :game_id, non_null(:string)
+      resolve &Wargear.Resolver.Game.kill/2
     end
   end
   
