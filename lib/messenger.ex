@@ -8,7 +8,14 @@ defmodule Wargear.Messenger do
   end
 
   def notify_of_turn(player_name, game_id) do
-    %{text: "<#{slack_name(player_name)}>, you're up, ya jackass http://www.wargear.net/games/view/#{game_id}"}
+    url = "http://www.wargear.net/games/view/#{game_id}"
+
+    text = case player_name do
+      "adam jormp jomp" -> "<#{slack_name(player_name)}>, it's your turn good sir, best of luck #{url}"
+      _ -> "<#{slack_name(player_name)}>, you're up, ya jackass #{url}"
+    end
+
+    %{text: text}
     |> post_to_slack()
   end
 

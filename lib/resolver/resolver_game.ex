@@ -11,8 +11,8 @@ defmodule Wargear.Resolver.Game do
   # end
   
   def new(%{game_id: _game_id}, _info) do
-    # poller_spec = { Wargear.Events.Poller, [game_id: game_id] }
-    # handler_spec = { Wargear.Events.Handler, [game_id: game_id] }
+    # poller_spec = { Wargear.Events.Poller, [game_id: 743165] }
+    # handler_spec = { Wargear.Events.Handler, [game_id: 743165] }
     # {:ok, poller} = DynamicSupervisor.start_child(GameSupervisor, poller_spec)
     # # Dets insert Handlergame_id -> pid
     # {:ok, handler} = DynamicSupervisor.start_child(GameSupervisor, handler_spec)
