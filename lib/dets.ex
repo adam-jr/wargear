@@ -1,7 +1,7 @@
 defmodule Wargear.Dets do
 
   def insert(table, key, val) do
-    atom_key = :"#{to_string(key)}"
+    atom_key = String.to_atom(to_string(key))
     :dets.open_file(table, [{:file, "#{table}.txt" |> String.to_charlist() }])
     :dets.insert(table, {atom_key, val})
     :dets.close(table)
@@ -10,7 +10,7 @@ defmodule Wargear.Dets do
   def lookup(table, key, default) do
     :dets.open_file(table, [{:file, "#{table}.txt" |> String.to_charlist()}])
 
-    atom_key = :"#{to_string(key)}"
+    atom_key = String.to_atom(to_string(key))
 
     val = 
       case :dets.lookup(table, atom_key) do
