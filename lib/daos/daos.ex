@@ -4,7 +4,10 @@ defmodule Wargear.Daos do
     alias Wargear.Dets
     @table :last_viewed_event_id
     @initial_state 0
-    def update(event_id, game_id), do: Dets.insert(@table, game_id, event_id)
+    def update(event_id, game_id) do
+      IO.inspect(event_id)
+      Dets.insert(@table, game_id, event_id)
+    end
     def last_event_id(game_id), do: Dets.lookup(@table, game_id, @initial_state)
   end
 

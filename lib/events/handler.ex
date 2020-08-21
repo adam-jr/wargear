@@ -24,7 +24,7 @@ defmodule Wargear.Events.Handler do
   def handle_info(:work, %State{game_id: game_id} = state) do
     last_viewed_event_id = HandlerDao.last_event_id(game_id)
 
-    case EventsDao.get(last_viewed_event_id + 1, game_id) do
+    case EventsDao.get(last_viewed_event_id + 1, nil, game_id) do
       [] -> :noop
       events ->
         update_last_viewed_event(events, game_id)

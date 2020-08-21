@@ -29,7 +29,7 @@ defmodule Wargear.Events.Dao do
 
   def insert(events, game_id), do: Dets.insert(@table, game_id, events)
 
-  def get(start_id, limit \\ nil, game_id) do
+  def get(start_id, limit, game_id) do
     Dets.lookup(@table, game_id, @initial_state)
     |> Enum.filter(&(&1.id >= start_id))
     |> (fn events -> 
