@@ -2,7 +2,7 @@ defmodule Wargear.Events.Handler do
   use GenServer
   alias Wargear.Events.Dao, as: EventsDao
   alias Wargear.ViewScreen
-  alias Wargear.Daos.{HandlerDao, CurrentTurnDao, DeadDao}
+  alias Wargear.Daos.{LastViewedEventIdDao, CurrentTurnDao, DeadDao}
   require Logger
 
   @interval 1000 # 1 second
@@ -22,9 +22,7 @@ defmodule Wargear.Events.Handler do
   end
 
   def handle_info(:work, %State{game_id: game_id} = state) do
-    last_viewed_event_id = HandlerDao.last_event_id(game_id)
-
-    case EventsDao.get(last_viewed_event_id + 1, nil, game_id) do
+    case EventsDao.get(game_id) do
       [] -> :noop
       events ->
         update_last_viewed_event(events, game_id)
@@ -74,10 +72,9 @@ defmodule Wargear.Events.Handler do
     Enum.at(events, -1)
     |> Map.get(:id)
     |> (fn id ->
-      Logger.info("Setting last viewed event id = #{id}...")
       id
     end).()
-    |> HandlerDao.update(game_id)
+    |> LastViewedEventIdDao.update(game_id)
   end
 
 end

@@ -1,24 +1,24 @@
 defmodule Wargear.Dets do
 
-  def insert(table, key, val) do
-    atom_key = String.to_atom("game_id_" <> to_string(key))
-    :dets.open_file(table, [{:file, "#{table}.txt" |> String.to_charlist() }])
-    :dets.insert(table, {atom_key, val})
-    :dets.close(table)
+  @table :wargear
+  @filename 'wargear_data.txt'
+
+  def insert(key, val) do
+    :dets.open_file(@table, [{:file, @filename}])
+    :dets.insert(@table, {key, val})
+    :dets.close(@table)
   end
 
-  def lookup(table, key, default) do
-    :dets.open_file(table, [{:file, "#{table}.txt" |> String.to_charlist()}])
-
-    atom_key = String.to_atom("game_id_" <> to_string(key))
+  def lookup(key) do
+    :dets.open_file(@table, [{:file, @filename}])
 
     val = 
-      case :dets.lookup(table, atom_key) do
-        [{^atom_key, val}] -> val
-        _ -> default
+      case :dets.lookup(@table, key) do
+        [{^key, val}] -> val
+        [] -> nil
       end
 
-    :dets.close(table)
+    :dets.close(@table)
 
     val
   end
