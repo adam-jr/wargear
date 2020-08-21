@@ -1,13 +1,13 @@
 defmodule Wargear.Dets do
 
   def insert(table, key, val) do
-    :dets.open_file(table, [{:file, "#{table}.txt"}])
+    :dets.open_file(table, [{:file, "#{table}.txt" |> String.to_charlist() }])
     :dets.insert(table, {key, val})
     :dets.close(table)
   end
 
   def lookup(table, key, default) do
-    :dets.open_file(table, [{:file, "#{table}.txt"}])
+    :dets.open_file(table, [{:file, "#{table}.txt" |> String.to_charlist()}])
 
     val = 
       case :dets.lookup(table, key) do
