@@ -7,6 +7,7 @@ defmodule Wargear.Schema do
   mutation do
     field :new_game, type: :boolean do
       arg :game_id, non_null(:string)
+      arg :total_fog, non_null(:boolean)
       resolve &Wargear.Resolver.Game.new/2
     end
 

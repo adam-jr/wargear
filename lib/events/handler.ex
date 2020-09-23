@@ -5,23 +5,24 @@ defmodule Wargear.Events.Handler do
   alias Wargear.Daos.{LastViewedEventIdDao, CurrentTurnDao, DeadDao}
   require Logger
 
-  @interval 1000 # 1 second
+  @interval_reg 1000 # 1 second
+  @interval_total_fog 1000 * 60 * 10 # 10 minutes
 
   defmodule State do
-    defstruct game_id: nil
+    defstruct game_id: nil, total_fog: false
   end
 
-  def start_link([game_id: game_id]) do
-    GenServer.start_link(__MODULE__, game_id)
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args)
   end
 
-  def init(game_id) do
-    Logger.info("Initializing event store watcher, polling every #{@interval / 1000} second(s)...")
-    schedule_work()
-    {:ok, %State{game_id: game_id}}
+  def init([game_id: game_id, total_fog: total_fog]) do
+    Logger.info("Initializing event handler...")
+    schedule_work(total_fog)
+    {:ok, %State{game_id: game_id, total_fog: total_fog}}
   end
 
-  def handle_info(:work, %State{game_id: game_id} = state) do
+  def handle_info(:work_reg, %State{game_id: game_id} = state) do
     case EventsDao.get(game_id) do
       [] -> :noop
       events ->
@@ -29,7 +30,15 @@ defmodule Wargear.Events.Handler do
         perform_view_screen_updates(game_id)
     end
     
-    schedule_work()
+    schedule_work(state)
+
+    {:noreply, state}
+  end
+
+  def handle_info(:work_total_fog, %State{game_id: game_id} = state) do
+    perform_view_screen_updates(game_id)
+    
+    schedule_work(true)
 
     {:noreply, state}
   end
@@ -66,7 +75,8 @@ defmodule Wargear.Events.Handler do
     end
   end
 
-  defp schedule_work, do: Process.send_after(self(), :work, @interval)
+  defp schedule_work(%State{total_fog: false}), do: Process.send_after(self(), :work_reg, @interval_reg)
+  defp schedule_work(%State{total_fog: true}), do: Process.send_after(self(), :work_total_fog, @interval_total_fog)
 
   defp update_last_viewed_event(events, game_id) do
     Enum.at(events, -1)
