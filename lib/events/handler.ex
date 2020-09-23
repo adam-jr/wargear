@@ -6,7 +6,7 @@ defmodule Wargear.Events.Handler do
   require Logger
 
   @interval_reg 1000 # 1 second
-  @interval_total_fog 1000 * 60 * 10 # 10 minutes
+  @interval_total_fog 1000 * 60
 
   defmodule State do
     defstruct game_id: nil, total_fog: false
