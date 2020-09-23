@@ -39,7 +39,7 @@ defmodule Wargear.Events.Handler do
   def handle_info(:work_total_fog, %State{game_id: game_id} = state) do
     perform_view_screen_updates(game_id)
     
-    schedule_work(true)
+    schedule_work(state)
 
     {:noreply, state}
   end
