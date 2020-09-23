@@ -18,8 +18,9 @@ defmodule Wargear.Events.Handler do
 
   def init([game_id: game_id, total_fog: total_fog]) do
     Logger.info("Initializing event handler...")
-    schedule_work(total_fog)
-    {:ok, %State{game_id: game_id, total_fog: total_fog}}
+    state = %State{game_id: game_id, total_fog: total_fog}
+    schedule_work(state)
+    {:ok, state}
   end
 
   def handle_info(:work_reg, %State{game_id: game_id} = state) do

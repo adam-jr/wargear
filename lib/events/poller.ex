@@ -16,7 +16,7 @@ defmodule Wargear.Events.Poller do
   end
 
   def start_link([game_id: game_id, total_fog: total_fog]) do
-    if total_fog, do: GenServer.start_link(__MODULE__, game_id)
+    unless total_fog, do: GenServer.start_link(__MODULE__, game_id)
   end
 
   def init(game_id) do
