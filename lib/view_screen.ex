@@ -4,8 +4,7 @@ defmodule Wargear.ViewScreen do
     defstruct name: nil, current: false, eliminated: false
   end
 
-  def get_players do
-    game_id = Wargear.Events.game_id()
+  def get_players(game_id) do
     %{body: body} = HTTPoison.get!("http://www.wargear.net/games/view/#{game_id}")
 
     Floki.parse_document!(body) 

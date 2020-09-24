@@ -1,73 +1,34 @@
 defmodule Wargear.Events.Handler do
-  # watches stored events and triggers actions on receipt of new
-  defmodule HandlerDao do
-    alias Wargear.Dets
-    @table :event_info
-    @key :last_viewed_event_id
-    @initial_state 0
-    def update(event_id), do: Dets.insert(@table, @key, event_id)
-    def last_event_id, do: Dets.lookup(@table, @key, @initial_state)
-    def reset, do: Dets.insert(@table, @key, @initial_state)
-  end
-
-  defmodule CurrentTurnDao do
-    alias Wargear.Dets
-    @table :turn_info
-    @key :current_player
-    @initial_state nil
-    def update(player), do: Dets.insert(@table, @key, player)
-    def get, do: Dets.lookup(@table, @key, @initial_state)
-    def reset, do: Dets.insert(@table, @key, @initial_state)
-  end
-
-  defmodule DeadDao do
-    alias Wargear.Dets
-    @table :turn_info
-    @key :dead_players
-    @initial_state []
-    def update(players), do: Dets.insert(@table, @key, players)
-    def get, do: Dets.lookup(@table, @key, @initial_state)
-    def reset, do: Dets.insert(@table, @key, @initial_state)
-  end
-
-  defmodule GameDao do
-    alias Wargear.Dets
-    @table :game_info
-    @key :game_id
-    @initial_state nil
-    def update(game_id), do: Dets.insert(@table, @key, game_id)
-    def get, do: Dets.lookup(@table, @key, @initial_state)
-    def reset, do: Dets.insert(@table, @key, @initial_state)
-  end
-
   use GenServer
   alias Wargear.Events.Dao, as: EventsDao
   alias Wargear.ViewScreen
+  alias Wargear.Daos.{LastViewedEventIdDao, CurrentTurnDao, DeadDao}
   require Logger
 
-  @active_interval 1000 # 1 second
-  @initial_state :active
+  @interval_reg 1000 # 1 second
+  @interval_total_fog 1000 * 60
 
-  def start_link({:run, run}) do
-    GenServer.start_link(__MODULE__, run)
+  defmodule State do
+    defstruct game_id: nil, total_fog: false
   end
 
-  def init(false), do: {:ok, nil}
-  def init(true) do
-    Logger.info("Initializing event store watcher, polling every #{@active_interval / 1000} second(s)...")
-    schedule_work(@initial_state)
-    {:ok, @initial_state}
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args)
   end
 
-  def handle_info(:work, state) do
-    last_viewed_event_id = HandlerDao.last_event_id()
+  def init([game_id: game_id, total_fog: total_fog]) do
+    Logger.info("Initializing event handler...")
+    state = %State{game_id: game_id, total_fog: total_fog}
+    schedule_work(state)
+    {:ok, state}
+  end
 
-    case EventsDao.get(last_viewed_event_id + 1) do
+  def handle_info(:work_reg, %State{game_id: game_id} = state) do
+    case EventsDao.get(game_id) do
       [] -> :noop
       events ->
-        update_last_viewed_event(events)
-        handle(events)
-        perform_view_screen_updates()
+        update_last_viewed_event(events, game_id)
+        perform_view_screen_updates(game_id)
     end
     
     schedule_work(state)
@@ -75,58 +36,56 @@ defmodule Wargear.Events.Handler do
     {:noreply, state}
   end
 
-  defp perform_view_screen_updates do
-    players = ViewScreen.get_players()
+  def handle_info(:work_total_fog, %State{game_id: game_id} = state) do
+    perform_view_screen_updates(game_id)
+    
+    schedule_work(state)
 
-    current_player_update(players)
-    eliminated_players_update(players)
+    {:noreply, state}
   end
 
-  def eliminated_players_update(players) do
+  defp perform_view_screen_updates(game_id) do
+    players = ViewScreen.get_players(game_id)
+
+    current_player_update(players, game_id)
+    eliminated_players_update(players, game_id)
+  end
+
+  def eliminated_players_update(players, game_id) do
     current_dead = Enum.filter(players, &(&1.eliminated)) |> Enum.map(&(&1.name))
-    last_dead = DeadDao.get()
+    last_dead = DeadDao.get(game_id)
 
     case Enum.reject(current_dead, &(&1 in last_dead)) do
       [new_dead] ->
         Logger.info("Notifying of #{current_dead}'s death... :('")
-        DeadDao.update(current_dead)
-        Wargear.Messenger.notify_newly_dead(new_dead)
+        DeadDao.update(current_dead, game_id)
+        Wargear.Messenger.notify_newly_dead(new_dead, game_id)
       [] -> :noop
-      _multiple -> DeadDao.update(current_dead)
+      _multiple -> DeadDao.update(current_dead, game_id)
     end
   end
 
-  defp current_player_update(players) do
+  defp current_player_update(players, game_id) do
     [current] = Enum.filter(players, &(&1.current))
-    last_current = CurrentTurnDao.get()
+    last_current = CurrentTurnDao.get(game_id)
 
     if current.name != last_current do
       Logger.info("Notifying #{current.name} of turn...")
-      CurrentTurnDao.update(current.name)
-      Wargear.Messenger.notify_of_turn(current.name)
+      CurrentTurnDao.update(current.name, game_id)
+      Wargear.Messenger.notify_of_turn(current.name, game_id)
     end
   end
 
-  defp schedule_work(:active), do: Process.send_after(self(), :work, @active_interval)
+  defp schedule_work(%State{total_fog: false}), do: Process.send_after(self(), :work_reg, @interval_reg)
+  defp schedule_work(%State{total_fog: true}), do: Process.send_after(self(), :work_total_fog, @interval_total_fog)
 
-  defp handle(events) do
-    # player =
-    #   Enum.filter(events, &(&1.type == :turn_start))
-    #   |> Enum.at(-1)
-    #   |> Map.get(:player)
-
-    # Wargear.Messenger.notify_of_turn(player)
-    events
-  end
-
-  defp update_last_viewed_event(events) do
+  defp update_last_viewed_event(events, game_id) do
     Enum.at(events, -1)
     |> Map.get(:id)
     |> (fn id ->
-      Logger.info("Setting last viewed event id = #{id}...")
       id
     end).()
-    |> HandlerDao.update()
+    |> LastViewedEventIdDao.update(game_id)
   end
 
 end

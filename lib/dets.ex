@@ -1,23 +1,24 @@
 defmodule Wargear.Dets do
 
-  @filename 'events.txt'
+  @table :wargear
+  @filename 'wargear_data.txt'
 
-  def insert(table, key, val) do
-    :dets.open_file(table, [{:file, @filename}])
-    :dets.insert(table, {key, val})
-    :dets.close(table)
+  def insert(key, val) do
+    :dets.open_file(@table, [{:file, @filename}])
+    :dets.insert(@table, {key, val})
+    :dets.close(@table)
   end
 
-  def lookup(table, key, default) do
-    :dets.open_file(table, [{:file, @filename}])
+  def lookup(key) do
+    :dets.open_file(@table, [{:file, @filename}])
 
     val = 
-      case :dets.lookup(table, key) do
+      case :dets.lookup(@table, key) do
         [{^key, val}] -> val
-        _ -> default
+        [] -> nil
       end
 
-    :dets.close(table)
+    :dets.close(@table)
 
     val
   end

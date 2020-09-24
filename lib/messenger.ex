@@ -1,14 +1,21 @@
 defmodule Wargear.Messenger do
 
-  def notify_newly_dead(player_name) do
+  def notify_newly_dead(player_name, game_id) do
     %{text: 
-        "<#{slack_name(player_name)}> is dead"
+        "<#{slack_name(player_name)}> died in http://www.wargear.net/games/view/#{game_id}"
       }
       |> post_to_slack()
   end
 
-  def notify_of_turn(player_name) do
-    %{text: "<#{slack_name(player_name)}>, you're up"}
+  def notify_of_turn(player_name, game_id) do
+    url = "http://www.wargear.net/games/view/#{game_id}"
+
+    text = case player_name do
+      "adam jormp jomp" -> "<#{slack_name(player_name)}>, it's your turn good sir, best of luck #{url}"
+      _ -> "<#{slack_name(player_name)}>, you're up, ya jackass #{url}"
+    end
+
+    %{text: text}
     |> post_to_slack()
   end
 
