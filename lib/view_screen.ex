@@ -33,8 +33,13 @@ defmodule Wargear.ViewScreen do
     clock_td = Enum.at(tds, -2)
 
     case clock_td do
+      {"td", [], [{"span", [{"id", _clock_num}], [_hd|_tl]}]} -> true
       {"td", [], [{"span", [{"id", _clock_num}], []}]} -> false
-      _ -> true
+      {"td", [], [{"span", [{"title", "AutoBoot Pending"}, {"class", "boot_pending"}], [" "]}, {"span", [{"id", _clock_num}], []}]} -> false
+      _ ->
+        IO.inspect "Unexpected current turn tr shape #{__MODULE__}:"
+        IO.inspect tr
+        false
     end
   end
 
