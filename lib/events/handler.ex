@@ -51,6 +51,7 @@ defmodule Wargear.Events.Handler do
     eliminated_players_update(players, game_id)
   end
 
+  def eliminated_players_update([], _), do: Logger.error("unable to update eliminated players")
   def eliminated_players_update(players, game_id) do
     current_dead = Enum.filter(players, &(&1.eliminated)) |> Enum.map(&(&1.name))
     last_dead = DeadDao.get(game_id)
@@ -65,6 +66,7 @@ defmodule Wargear.Events.Handler do
     end
   end
 
+  defp current_player_update([], _), do: Logger.error("unable to update current player")
   defp current_player_update(players, game_id) do
     [current] = Enum.filter(players, &(&1.current))
     last_current = CurrentTurnDao.get(game_id)

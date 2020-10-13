@@ -21,6 +21,7 @@ defmodule Wargear.ViewScreen do
     }
   end
 
+  def get_player_rows([]), do: []
   def get_player_rows(div) do
     [{"div", [{"id", "playerstats"}], table}] = div
     [{"table",  [{"class", "data ranking centered"}], tbody}] = table
