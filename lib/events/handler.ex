@@ -68,11 +68,11 @@ defmodule Wargear.Events.Handler do
 
   defp current_player_update([], _), do: Logger.error("unable to update current player")
   defp current_player_update(players, game_id) do
-    [current] = Enum.filter(players, &(&1.current))
+    current_list = Enum.filter(players, &(&1.current))
     last_current = CurrentTurnDao.get(game_id)
 
-    if current.name != last_current do
-      Logger.info("Notifying #{current.name} of turn...")
+    if len(current_list) == 1 and hd(current_list) != last_current do
+      Logger.info("Notifying #{hd(current_list).name} of turn...")
       CurrentTurnDao.update(current.name, game_id)
       Wargear.Messenger.notify_of_turn(current.name, game_id)
     end

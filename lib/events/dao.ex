@@ -15,8 +15,8 @@ defmodule Wargear.Events.Dao do
 
     incoming_latest_id =
       events
-      |> Enum.at(-1)
-      |> Map.get(:id)
+      |> Enum.at(-1, %{})
+      |> Map.get(:id, 0)
 
     if incoming_latest_id > stored_latest_id do
       Logger.info("New events! Inserting to event store...")
