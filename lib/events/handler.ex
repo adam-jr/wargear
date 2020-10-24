@@ -71,7 +71,9 @@ defmodule Wargear.Events.Handler do
     current_list = Enum.filter(players, &(&1.current))
     last_current = CurrentTurnDao.get(game_id)
 
-    if length(current_list) == 1 and hd(current_list) != last_current do
+    should_update = length(current_list) == 1 and hd(current_list) |> Map.get(:name) != last_current
+
+    if should_update do
       current = hd(current_list)
       Logger.info("Notifying #{current.name} of turn...")
       CurrentTurnDao.update(current.name, game_id)
