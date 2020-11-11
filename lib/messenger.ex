@@ -11,8 +11,7 @@ defmodule Wargear.Messenger do
     url = "http://www.wargear.net/games/view/#{game_id}"
 
     text = case player_name do
-      "adam jormp jomp" -> "<#{slack_name(player_name)}>, it's your turn good sir, best of luck #{url}"
-      _ -> "<#{slack_name(player_name)}>, you're up, ya jackass #{url}"
+      _ -> "<#{slack_name(player_name)}>, I wuv you 🧸💕, it's your turn #{url}"
     end
 
     %{text: text}
@@ -44,7 +43,6 @@ defmodule Wargear.Messenger do
     [{"Content-Type", "application/json"}, 
     {"Authorization", "Bearer #{token}"}]
   end
-
 
   defp slack_name(player_name) do
     case player_name do
