@@ -5,12 +5,15 @@ defmodule Wargear.ViewScreen do
   end
 
   def get_players(game_id) do
-    %{body: body} = HTTPoison.get!("http://www.wargear.net/games/view/#{game_id}")
-
-    Floki.parse_document!(body) 
-    |> Floki.find("div#playerstats")
-    |> get_player_rows()
-    |> Enum.map(&to_player/1)
+    case HTTPoison.get("http://www.wargear.net/games/view/#{game_id}") do
+      {:ok, %{body: body}} -> 
+        Floki.parse_document!(body) 
+        |> Floki.find("div#playerstats")
+        |> get_player_rows()
+        |> Enum.map(&to_player/1)
+      
+      _ -> []
+    end
   end
 
   def to_player(tr) do
