@@ -18,6 +18,13 @@ defmodule Wargear.Messenger do
     |> post_to_slack()
   end
 
+  def list_channels do
+    url = url(:list_channels)
+    headers = headers()
+
+    HTTPoison.get!(url, headers )
+  end
+
   defp post_to_slack(body) do
     url = url(:post_message)
     headers = headers()
