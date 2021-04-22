@@ -1,4 +1,4 @@
-defmodule Wargear.SlackReader do
+defmodule Wargear.Slack.Reader do
   use GenServer
   require Logger
 
@@ -21,7 +21,6 @@ defmodule Wargear.SlackReader do
   end
 
   def start_link(params) do
-    IO.inspect(params, label: "what the fuck")
     GenServer.start_link(__MODULE__, params)
   end
 
