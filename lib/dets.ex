@@ -1,5 +1,4 @@
 defmodule Wargear.Dets do
-
   @table :wargear
   @filename 'wargear_data.txt'
 
@@ -12,7 +11,7 @@ defmodule Wargear.Dets do
   def lookup(key) do
     :dets.open_file(@table, [{:file, @filename}])
 
-    val = 
+    val =
       case :dets.lookup(@table, key) do
         [{^key, val}] -> val
         [] -> nil
