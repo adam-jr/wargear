@@ -34,13 +34,13 @@ defmodule Wargear.SlackReader do
     timestamp = Daos.LastReadSlackTimestampDao.get()
 
     message_status =
-      case Wargear.Slack.new_messages(channel: :spitegear, timestamp: timestamp) do
+      case Slack.new_messages(channel: :spitegear, timestamp: timestamp) do
         [] ->
           :no_activity
 
         [latest | _rest] = messages ->
           Daos.LastReadSlackTimestampDao.update(latest.timestamp)
-          SlackMessageQueue.enqueue(Enum.reverse(messages))
+          Slack.MessageQueue.enqueue(Enum.reverse(messages))
           :new_messages
       end
 
