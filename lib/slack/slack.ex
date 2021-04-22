@@ -9,7 +9,7 @@ defmodule Wargear.Slack do
       %__MODULE__{
         text: json["text"],
         user: json["user"],
-        timestamp: json["timestamp"]
+        timestamp: json["ts"]
       }
     end
   end
@@ -21,12 +21,16 @@ defmodule Wargear.Slack do
       messages
     else
       e ->
-        Logger.error("Failed to get slack messages with #{inspect e}")
+        Logger.error("Failed to get slack messages with #{inspect(e)}")
         []
     end
   end
 
-  defp parse_messages(%{"ok" => false} = body), do: {:error, "Response not OK, body: #{inspect body}"}
-  defp parse_messages(%{"ok" => true, "messages" => messages}), do: Enum.map(messages, &Message.from_json/1)
+  defp parse_messages(%{"ok" => false} = body),
+    do: {:error, "Response not OK, body: #{inspect(body)}"}
+
+  defp parse_messages(%{"ok" => true, "messages" => messages}),
+    do: {:ok, Enum.map(messages, &Message.from_json/1)}
+
   defp parse_messages(%{"ok" => true} = body), do: {:error, "Unexpected response, body: #{body}"}
 end

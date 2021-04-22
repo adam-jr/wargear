@@ -21,7 +21,7 @@ defmodule Wargear.SlackReader do
   end
 
   def start_link(params) do
-    IO.inspect params, label: "what the fuck"
+    IO.inspect(params, label: "what the fuck")
     GenServer.start_link(__MODULE__, params)
   end
 
