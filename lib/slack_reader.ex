@@ -6,8 +6,8 @@ defmodule Wargear.SlackReader do
 
   # 1 minute
   @idle_interval 60 * 1000
-  # 1 second
-  @active_interval 1000
+  # 2 seconds
+  @active_interval 2000
 
   # {mode, num_cycles}
   @active {:active, 0}
