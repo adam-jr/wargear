@@ -20,8 +20,9 @@ defmodule Wargear.SlackReader do
     defstruct cycle: nil
   end
 
-  def start_link(_params) do
-    GenServer.start_link(__MODULE__)
+  def start_link(params) do
+    IO.inspect params, label: "what the fuck"
+    GenServer.start_link(__MODULE__, params)
   end
 
   def init(_) do
@@ -30,17 +31,17 @@ defmodule Wargear.SlackReader do
     {:ok, state}
   end
 
-  def handle_info(:work, %State{game_id: game_id} = state) do
+  def handle_info(:work, state) do
     timestamp = Daos.LastReadSlackTimestampDao.get()
 
     message_status =
-      case Slack.new_messages(channel: :spitegear, timestamp: timestamp) do
+      case Wargear.Slack.new_messages(channel: :spitegear, timestamp: timestamp) do
         [] ->
           :no_activity
 
-        [latest | _rest] = messages ->
+        [latest | _rest] = _messages ->
           Daos.LastReadSlackTimestampDao.update(latest.timestamp)
-          Slack.MessageQueue.enqueue(Enum.reverse(messages))
+          # Slack.MessageQueue.enqueue(Enum.reverse(messages))
           :new_messages
       end
 

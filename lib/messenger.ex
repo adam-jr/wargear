@@ -8,7 +8,7 @@ defmodule Wargear.Messenger do
     url = "http://www.wargear.net/games/view/#{game_id}"
 
     text =
-      case player_name do
+      case player.slack_name do
         _ -> "<#{player.slack_name}>, I wuv you 🧸💕, it's your turn #{url}"
       end
 

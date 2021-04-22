@@ -4,7 +4,7 @@ defmodule Wargear.Player do
   def from_table_row(tr) do
     name = player_name(tr)
 
-    %Player{
+    %__MODULE__{
       name: name,
       current: current_turn?(tr),
       eliminated: eliminated?(tr),

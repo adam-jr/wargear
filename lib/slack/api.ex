@@ -1,4 +1,4 @@
-defmodule Warger.Slack.API do
+defmodule Wargear.Slack.API do
   def new_messages(channel, timestamp) do
     HTTPoison.get(url(:read_channel), headers(),
       params: %{channel: channel_id(channel), oldest: timestamp}

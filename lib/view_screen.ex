@@ -5,7 +5,7 @@ defmodule Wargear.ViewScreen do
         Floki.parse_document!(body)
         |> Floki.find("div#playerstats")
         |> get_player_rows()
-        |> Enum.map(&Player.from_table_row/1)
+        |> Enum.map(&Wargear.Player.from_table_row/1)
 
       _ ->
         []
