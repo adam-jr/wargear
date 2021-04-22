@@ -7,7 +7,7 @@ defmodule Wargear.Events.Dao do
   def key(game_id), do: @prefix <> "_" <> to_string(game_id)
 
   def update(events, game_id) do
-    stored_latest_id = 
+    stored_latest_id =
       case get(game_id) do
         [] -> 0
         stored -> Enum.at(stored, -1) |> Map.get(:id)
@@ -33,8 +33,7 @@ defmodule Wargear.Events.Dao do
   def get(game_id) do
     case Dets.lookup(key(game_id)) do
       nil -> []
-      [_hd|_rest] = events -> events
+      [_hd | _rest] = events -> events
     end
   end
-
 end

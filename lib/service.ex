@@ -1,5 +1,4 @@
-defmodule Wargear.Service do  
-  
+defmodule Wargear.Service do
   # def run do
   #   players = Map.values(get_players())
   #   text = build_text(players)
@@ -16,10 +15,14 @@ defmodule Wargear.Service do
   @right 16
 
   def build_text(players) do
-    header = "|" <> center("player", @left) <> "|" <> 
-                center("units", @mid) <> "|" <> center("territories", @right) <> "|"
+    header =
+      "|" <>
+        center("player", @left) <>
+        "|" <>
+        center("units", @mid) <> "|" <> center("territories", @right) <> "|"
+
     rows = Enum.map(players, &build_line/1)
-    [header|rows] |> Enum.join("\n")
+    [header | rows] |> Enum.join("\n")
   end
 
   def build_line(player) do
@@ -32,6 +35,7 @@ defmodule Wargear.Service do
   def center(text, length) do
     rem = length - String.length(text)
     left = Integer.floor_div(rem, 2)
+
     String.pad_leading(text, left + String.length(text))
     |> String.pad_trailing(length)
   end
