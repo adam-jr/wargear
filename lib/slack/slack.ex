@@ -16,7 +16,7 @@ defmodule Wargear.Slack do
   def new_messages(channel, timestamp) do
     with {:ok, response} <- API.new_messages(channel, timestamp),
          {:ok, body} <- Poison.decode(response.body),
-         messages <- body["messages"] do
+         messages <- Map.get(body, "messages", []) do
       Enum.map(messages, Message.from_json(&1))
     else
       e ->

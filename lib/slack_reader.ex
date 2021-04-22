@@ -24,8 +24,8 @@ defmodule Wargear.SlackReader do
     GenServer.start_link(__MODULE__)
   end
 
-  def init(game_id) do
-    Logger.info("Initializing Chris Heckler...")
+  def init(_) do
+    state = update(%State{}, :init)
     schedule_work(state)
     {:ok, state}
   end
@@ -54,8 +54,8 @@ defmodule Wargear.SlackReader do
   defp schedule_work(%State{cycle: {:idle, _any}}),
     do: Process.send_after(self(), :work, @idle_interval)
 
-  defp update(state, update) do
-    case {update, state.cycle} do
+  defp update(state, status) do
+    case {status, state.cycle} do
       {:new_messages, _} ->
         Logger.info("SlackReader is in active state!")
         Map.put(state, :cycle, @active)
@@ -72,6 +72,10 @@ defmodule Wargear.SlackReader do
 
       {:no_activity, _idle_state} ->
         Map.put(state, :cycle, @idle)
+
+      {:init, _} ->
+        Logger.info("SlackReader initiating in active state!")
+        Map.put(state, :cycle, @active)
     end
   end
 end
