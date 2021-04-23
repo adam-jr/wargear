@@ -48,6 +48,10 @@ defmodule Wargear.Slack.Reader do
     {:noreply, update(state, message_status)}
   end
 
+  def handle_info(_msg, state) do
+    {:noreply, state}
+  end
+
   defp schedule_work(%State{cycle: {:active, _any}}),
     do: Process.send_after(self(), :work, @active_interval)
 
