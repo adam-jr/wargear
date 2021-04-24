@@ -18,7 +18,14 @@ defmodule Wargear.Events.Handler do
   end
 
   def init(game_id: game_id, total_fog: total_fog) do
-    Logger.info("Initializing event handler...")
+    Logger.info("Initializing #{__MODULE__} with game_id #{game_id}")
+
+    if total_fog do
+      Logger.info("#{__MODULE__} will notify players every #{@interval_total_fog / 1000} seconds")
+    else
+      Logger.info("#{__MODULE__} will notify players every #{@interval_reg / 1000} second(s)")
+    end
+
     state = %State{game_id: game_id, total_fog: total_fog}
     schedule_work(state)
     {:ok, state}

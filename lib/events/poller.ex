@@ -26,7 +26,14 @@ defmodule Wargear.Events.Poller do
   end
 
   def init(game_id) do
-    Logger.info("Initializing #{__MODULE__}")
+    Logger.info("Initializing #{__MODULE__} with game_id #{game_id}")
+
+    Logger.info(
+      "#{__MODULE__} will poll every #{@active_interval / 1000} seconds when active and every #{
+        @idle_interval / (60 * 1000)
+      } minutes when idle"
+    )
+
     state = %State{game_id: game_id, cycle: @init}
     schedule_work(state)
     {:ok, state}
