@@ -7,7 +7,9 @@ defmodule Wargear.Events.Poller do
   @idle_interval 10 * 60 * 1000
   # 1 minute
   @active_interval 1 * 60 * 1000
+  @init_interval 1000
 
+  @init {:init, 0}
   # {mode, num_cycles}
   @active {:active, 0}
   # {mode, num_cycles}
@@ -25,7 +27,7 @@ defmodule Wargear.Events.Poller do
 
   def init(game_id) do
     Logger.info("Initializing #{__MODULE__}")
-    state = %State{game_id: game_id, cycle: @active}
+    state = %State{game_id: game_id, cycle: @init}
     schedule_work(state)
     {:ok, state}
   end
@@ -41,6 +43,9 @@ defmodule Wargear.Events.Poller do
 
     {:noreply, state}
   end
+
+  defp schedule_work(%State{cycle: {:init, _any}}),
+    do: Process.send_after(self(), :work, @init_interval)
 
   defp schedule_work(%State{cycle: {:active, _any}}),
     do: Process.send_after(self(), :work, @active_interval)
@@ -59,7 +64,7 @@ defmodule Wargear.Events.Poller do
       {:noop, {:active, n}} ->
         Map.put(state, :cycle, {:active, n + 1})
 
-      {:noop, _idle_state} ->
+      {:noop, _idle_or_init} ->
         Map.put(state, :cycle, @idle)
     end
   end
