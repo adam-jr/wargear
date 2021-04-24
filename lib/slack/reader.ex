@@ -62,14 +62,9 @@ defmodule Wargear.Slack.Reader do
   defp update(state, status) do
     case {status, state.cycle} do
       {:new_messages, _} ->
-        Logger.info("SlackReader is in active state!")
         Map.put(state, :cycle, @active)
 
       {:no_activity, {:active, @active_cycle_limit}} ->
-        Logger.info(
-          "#{@active_cycle_limit} cycles with no new events. SlackReader switching to idle state."
-        )
-
         Map.put(state, :cycle, @idle)
 
       {:no_activity, {:active, n}} ->
@@ -79,7 +74,6 @@ defmodule Wargear.Slack.Reader do
         Map.put(state, :cycle, @idle)
 
       {:init, _} ->
-        Logger.info("SlackReader initiating in active state!")
         Map.put(state, :cycle, @active)
     end
   end

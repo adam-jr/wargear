@@ -21,10 +21,9 @@ defmodule Wargear.Slack.MessageQueue do
 
   def handle_call(:dequeue, []), do: {:noreply, []}
 
-  def handle_call(:dequeue, [hd|rest]) do
+  def handle_call(:dequeue, [hd | rest]) do
     # handle_message(hd)
     GenServer.call(self(), :dequeue)
     {:noreply, rest}
   end
-
 end

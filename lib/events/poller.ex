@@ -24,7 +24,7 @@ defmodule Wargear.Events.Poller do
   end
 
   def init(game_id) do
-    Logger.info("Initializing Events Poller...")
+    Logger.info("Initializing #{__MODULE__}")
     state = %State{game_id: game_id, cycle: @active}
     schedule_work(state)
     {:ok, state}
@@ -32,8 +32,6 @@ defmodule Wargear.Events.Poller do
 
   def handle_info(:work, %State{game_id: game_id} = state) do
     schedule_work(state)
-
-    Logger.info("Polling for new events...")
 
     update_action =
       Events.get(game_id)
@@ -53,14 +51,9 @@ defmodule Wargear.Events.Poller do
   defp update(state, update) do
     case {update, state.cycle} do
       {:update, _} ->
-        Logger.info("Event Poller Switching to active state!")
         Map.put(state, :cycle, @active)
 
       {:noop, {:active, @active_cycle_limit}} ->
-        Logger.info(
-          "#{@active_cycle_limit} cycles with no new events. Event Poller Switching to idle state."
-        )
-
         Map.put(state, :cycle, @idle)
 
       {:noop, {:active, n}} ->
