@@ -3,15 +3,14 @@ defmodule Wargear.Events.Service do
   require Logger
 
   def insert_new(events, game_id) do
-    newest_new = newest_id(events)
-    newest_known = newest_id(Dao.get(game_id))
+    case newest_id(events) - newest_id(Dao.get(game_id)) do
+      num when num > 0 ->
+        Logger.info("#{__MODULE__}: Received #{num} new event(s), inserting")
+        Dao.update(events, game_id)
+        :update
 
-    if newest_new > newest_known do
-      Logger.info("#{__MODULE__}: Received #{newest_new - newest_known} new event(s), inserting")
-      Dao.update(events, game_id)
-      :update
-    else
-      :noop
+      _ ->
+        :noop
     end
   end
 

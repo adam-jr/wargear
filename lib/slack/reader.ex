@@ -49,7 +49,7 @@ defmodule Wargear.Slack.Reader do
   end
 
   def handle_info(msg, state) do
-    Logger.info "Unexpected Message: #{__MODULE__}: #{inspect msg}"
+    Logger.info("Unexpected Message: #{__MODULE__}: #{inspect(msg)}")
     {:noreply, state}
   end
 

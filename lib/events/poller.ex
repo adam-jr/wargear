@@ -33,11 +33,11 @@ defmodule Wargear.Events.Poller do
   def handle_info(:work, %State{game_id: game_id} = state) do
     schedule_work(state)
 
-    update_action =
+    action =
       Events.get(game_id)
-      |> Events.Dao.update(game_id)
+      |> Events.Service.insert_new(game_id)
 
-    state = update(state, update_action)
+    state = update(state, action)
 
     {:noreply, state}
   end
