@@ -25,7 +25,16 @@ defmodule Wargear.Slack.Reader do
   end
 
   def init(_) do
+    Logger.info("Initializing #{__MODULE__}")
+
+    Logger.info(
+      "#{__MODULE__} will poll every #{@active_interval / 1000} seconds when active and every #{
+        @idle_interval / (60 * 1000)
+      } minutes when idle"
+    )
+
     state = update(%State{}, :init)
+
     schedule_work(state)
     {:ok, state}
   end
