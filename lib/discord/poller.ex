@@ -30,8 +30,9 @@ defmodule Wargear.Discord.Poller do
           :no_activity
 
         [latest | _rest] = messages ->
+          # to parse into alerts, do:
+          # messages |> Enum.filter(fn m -> String.contains?(m.content, "ALERT") end) |> Enum.map(&Wargear.Nishant.TradeAlert.from_message/1)
           Daos.DiscordCursorDao.update(latest.id, @channel)
-          # Discord.MessageHandler.enqueue(Enum.reverse(messages))
       end
     end
 
