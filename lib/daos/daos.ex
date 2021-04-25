@@ -35,11 +35,19 @@ defmodule Wargear.Daos do
     end
   end
 
-  defmodule LastReadSlackTimestampDao do
+  defmodule SlackCursorDao do
     alias Wargear.Dets
     @prefix "last_read_slack_timestamp"
     def key, do: @prefix
     def update(timestamp), do: Dets.insert(key(), timestamp)
     def get, do: Dets.lookup(key())
+  end
+
+  defmodule DiscordCursorDao do
+    alias Wargear.Dets
+    @prefix "last_read_discord_message_id"
+    def key(channel_id), do: @prefix <> "_" <> to_string(channel_id)
+    def update(message_id, channel_id), do: Dets.insert(key(channel_id), message_id)
+    def get(channel_id), do: Dets.lookup(key(channel_id))
   end
 end

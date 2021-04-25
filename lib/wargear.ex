@@ -10,7 +10,7 @@ defmodule Wargear do
     children = [
       # supervisor(Wargear.Repo, []),
       supervisor(Wargear.Endpoint, []),
-      worker(Wargear.Slack.Reader, run: true),
+      worker(Wargear.Discord.Poller, run: true),
       {DynamicSupervisor, name: GameSupervisor, strategy: :one_for_one}
 
       # worker(Wargear.Events.Poller, [run: Application.get_env(:wargear, :events_poller  )[:run]]),
