@@ -67,6 +67,8 @@ defmodule Wargear.Events.Handler do
     current_dead = Enum.filter(players, & &1.eliminated)
     last_dead = DeadDao.get(game_id)
 
+    IO.inspect current_dead, label: "current dead"
+
     case Enum.reject(current_dead, &(&1.name in last_dead)) do
       [new_dead] ->
         Logger.info("Notifying of #{current_dead.name}'s death... :('")
