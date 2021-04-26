@@ -5,20 +5,20 @@ defmodule Wargear.Slack.API do
     )
   end
 
-  def channel_id(channel) do
+  defp channel_id(channel) do
     config = Application.get_env(:wargear, :slack_app)
 
     config[:channel_ids][channel]
   end
 
-  def url(endpoint) do
+  defp url(endpoint) do
     config = Application.get_env(:wargear, :slack_app)
 
     config[:base_url]
     |> Path.join(config[:endpoints][endpoint])
   end
 
-  def headers do
+  defp headers do
     token = Application.get_env(:wargear, :slack_app)[:auth_token]
     [{"Content-Type", "application/json"}, {"Authorization", "Bearer #{token}"}]
   end

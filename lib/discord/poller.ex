@@ -30,8 +30,11 @@ defmodule Wargear.Discord.Poller do
           :no_activity
 
         [latest | _rest] = messages ->
-          # to parse into alerts, do:
-          # messages |> Enum.filter(fn m -> String.contains?(m.content, "ALERT") end) |> Enum.map(&Wargear.Nishant.TradeAlert.from_message/1)
+          messages
+          |> Enum.filter(fn m -> String.contains?(m.content, "ALERT") end)
+          |> Enum.map(&Wargear.Nishant.TradeAlert.from_message/1)
+          |> Enum.each(&dm_adam/1)
+
           Daos.DiscordCursorDao.update(latest.id, @channel)
       end
     end
@@ -47,4 +50,9 @@ defmodule Wargear.Discord.Poller do
 
   defp schedule_work,
     do: Process.send_after(self(), :work, @active_interval)
+
+  def dm_adam(trade_alert) do
+    text = "#{inspect(trade_alert)}"
+    Wargear.Messenger.post_dm(text, :adam)
+  end
 end
