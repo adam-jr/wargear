@@ -30,6 +30,15 @@ defmodule Wargear.Messenger do
     HTTPoison.get!(url, headers)
   end
 
+  def open_conversation(user \\ :adam) do
+    url = url(:open_conversation)
+    headers = headers()
+    user = Application.get_env(:wargear, :slack_app)[:user_ids][user]
+    body = Poison.encode!(%{users: user})
+
+    HTTPoison.post!(url, body, headers)
+  end
+
   def read_channel(channel, timestamp) do
     url = url(:read_channel)
     channel_id = channel_id(channel)
