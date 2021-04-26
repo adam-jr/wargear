@@ -60,6 +60,20 @@ defmodule Wargear.Messenger do
     HTTPoison.post!(url, body, headers)
   end
 
+  def post_dm(text, recipient) do
+    url = url(:post_message)
+    headers = headers()
+    channel = Application.get_env(:wargear, :slack_app)[:dm_ids][recipient]
+
+    body =
+      %{}
+      |> Map.put(:text, text)
+      |> Map.put(:channel, channel)
+      |> Poison.encode!()
+
+    HTTPoison.post!(url, body, headers)
+  end
+
   def channel_id(channel) do
     config = Application.get_env(:wargear, :slack_app)
 
