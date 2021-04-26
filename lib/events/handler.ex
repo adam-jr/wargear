@@ -68,12 +68,12 @@ defmodule Wargear.Events.Handler do
     last_dead = DeadDao.get(game_id)
 
     case Enum.reject(current_dead, &(&1.name in last_dead)) do
+      [] ->
+        :noop
+
       newly_dead ->
         DeadDao.update(Enum.map(current_dead, & &1.name), game_id)
         Enum.each(newly_dead, fn d -> Wargear.Messenger.notify_newly_dead(d, game_id) end)
-
-      [] ->
-        :noop
     end
   end
 
