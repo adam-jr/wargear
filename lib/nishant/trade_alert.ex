@@ -45,7 +45,7 @@ defmodule Wargear.Nishant.TradeAlert do
 
   defp with_prefix(text, prefix, suffix) do
     [_hd, rest] = String.split(text, prefix)
-    [str|_rest] = String.split(rest, suffix)
+    [str | _rest] = String.split(rest, suffix)
     str
   end
 end

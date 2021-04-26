@@ -23,6 +23,13 @@ defmodule Wargear.Messenger do
     HTTPoison.get!(url, headers)
   end
 
+  def list_users do
+    url = url(:list_users)
+    headers = headers()
+
+    HTTPoison.get!(url, headers)
+  end
+
   def read_channel(channel, timestamp) do
     url = url(:read_channel)
     channel_id = channel_id(channel)
@@ -31,10 +38,10 @@ defmodule Wargear.Messenger do
     HTTPoison.get!(url, headers, params: %{channel: channel_id, oldest: timestamp})
   end
 
-  defp post_to_slack(body) do
+  defp post_to_slack(body, channel \\ :spitegear) do
     url = url(:post_message)
     headers = headers()
-    channel = Application.get_env(:wargear, :slack_app)[:channel]
+    channel = Application.get_env(:wargear, :slack_app)[:channel_ids][channel]
 
     body =
       body
