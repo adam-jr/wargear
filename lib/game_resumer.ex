@@ -14,7 +14,7 @@ defmodule Wargear.GameResumer do
     Wargear.Daos.GamesInProgressDao.remove_all()
     |> Enum.map(&resume_game/1)
 
-    {:stop, "done"}
+    {:stop, "done", nil}
   end
 
   defp resume_game(%{game_id: game_id, total_fog: total_fog} = game) do
