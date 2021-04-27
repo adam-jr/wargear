@@ -50,4 +50,27 @@ defmodule Wargear.Daos do
     def update(message_id, channel_id), do: Dets.insert(key(channel_id), message_id)
     def get(channel_id), do: Dets.lookup(key(channel_id))
   end
+
+  defmodule GamesInProgressDao do
+    alias Wargear.Dets
+    @prefix "games_in_progress"
+    def key, do: @prefix
+
+    def add(game) do
+      games = get()
+      Dets.insert(key(), [game | games])
+    end
+
+    def remove(game_id) do
+      games = get() |> Enum.reject(fn g -> g.game_id == game_id end)
+      Dets.insert(key(), games)
+    end
+
+    def get do
+      case Dets.lookup(key()) do
+        nil -> []
+        games -> games
+      end
+    end
+  end
 end

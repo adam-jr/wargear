@@ -99,8 +99,13 @@ defmodule Wargear.Events.Handler do
 
   defp winner_winner_update(players, game_id) do
     case Enum.find(players, & &1.winner) do
-      nil -> nil
-      player -> Wargear.Messenger.announce_winner(player, game_id)
+      nil ->
+        nil
+
+      player ->
+        Wargear.Messenger.announce_winner(player, game_id)
+        Wargear.Daos.GamesInProgressDao.remove(game_id)
+        DynamicSupervisor.terminate_child(GameSupervisor, self())
     end
   end
 

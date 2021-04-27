@@ -1,5 +1,10 @@
 defmodule Wargear.Player do
-  defstruct name: nil, current: false, eliminated: false, slack_name: nil, slack_id: nil, winner: false
+  defstruct name: nil,
+            current: false,
+            eliminated: false,
+            slack_name: nil,
+            slack_id: nil,
+            winner: false
 
   def from_table_row(tr) do
     name = player_name(tr)

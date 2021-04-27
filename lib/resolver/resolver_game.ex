@@ -8,6 +8,7 @@ defmodule Wargear.Resolver.Game do
     end
 
     {:ok, _handler} = DynamicSupervisor.start_child(GameSupervisor, handler_spec)
+    Wargear.Daos.GamesInProgressDao.add(%{game_id: game_id, total_fog: total_fog})
     {:ok, true}
   end
 
