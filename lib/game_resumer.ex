@@ -7,21 +7,14 @@ defmodule Wargear.GameResumer do
 
   def init(_) do
     send(self(), :resume_games)
-    {:ok, nil}
+    {:ok, nil, 1000}
   end
 
   def handle_info(:resume_games, _) do
     Wargear.Daos.GamesInProgressDao.remove_all()
-    |> IO.inspect()
     |> Enum.map(&resume_game/1)
 
-    Process.send_after(self(), :stop, 100)
-
     {:noreply, nil}
-  end
-
-  def handle_info(:stop, _) do
-    {:stop, "done", nil}
   end
 
   defp resume_game(%{game_id: game_id, total_fog: total_fog} = game) do
