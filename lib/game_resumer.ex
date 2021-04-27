@@ -12,11 +12,10 @@ defmodule Wargear.GameResumer do
   end
 
   def handle_info(:resume_games, _) do
-    Logger.info("#{__MODULE__} resuming games")
     Wargear.Daos.GamesInProgressDao.remove_all()
     |> Enum.map(&resume_game/1)
 
-    {:noreply, nil}
+    {:stop, "done", nil}
   end
 
   defp resume_game(%{game_id: game_id, total_fog: total_fog} = game) do
