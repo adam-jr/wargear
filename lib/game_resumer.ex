@@ -14,6 +14,12 @@ defmodule Wargear.GameResumer do
     Wargear.Daos.GamesInProgressDao.remove_all()
     |> Enum.map(&resume_game/1)
 
+    Process.send_after(self(), :stop, 100)
+
+    {:noreply, nil}
+  end
+
+  def handle_info(:stop, _) do
     {:stop, "done", nil}
   end
 
