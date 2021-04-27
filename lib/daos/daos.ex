@@ -68,6 +68,12 @@ defmodule Wargear.Daos do
       game
     end
 
+    def remove_all() do
+      games = get()
+      Dets.insert(key(), [])
+      games
+    end
+
     def get do
       case Dets.lookup(key()) do
         nil -> []
