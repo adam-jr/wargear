@@ -1,13 +1,17 @@
 defmodule Wargear.Resolver.Game do
   def new(%{game_id: game_id, total_fog: total_fog}, _info) do
-    poller_spec = {Wargear.Events.Poller, [game_id: game_id, total_fog: total_fog]}
-    handler_spec = {Wargear.Events.Handler, [game_id: game_id, total_fog: total_fog]}
-
     unless total_fog do
-      {:ok, _poller} = DynamicSupervisor.start_child(GameSupervisor, poller_spec)
+      poller_spec = {Wargear.Events.Poller, [game_id: game_id, total_fog: total_fog]}
+
+      {:ok, _poller} =
+        DynamicSupervisor.start_child(GameSupervisor, poller_spec) |> IO.inspect(label: "poller")
     end
 
-    {:ok, _handler} = DynamicSupervisor.start_child(GameSupervisor, handler_spec)
+    handler_spec = {Wargear.Events.Handler, [game_id: game_id, total_fog: total_fog]}
+
+    {:ok, _handler} =
+      DynamicSupervisor.start_child(GameSupervisor, handler_spec) |> IO.inspect(label: "handler")
+
     Wargear.Daos.GamesInProgressDao.add(%{game_id: game_id, total_fog: total_fog})
     {:ok, true}
   end
