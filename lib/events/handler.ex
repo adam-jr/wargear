@@ -104,10 +104,15 @@ defmodule Wargear.Events.Handler do
 
       player ->
         Wargear.Messenger.announce_winner(player, game_id)
-        game = Wargear.Daos.GamesInProgressDao.remove(game_id)
-        DynamicSupervisor.terminate_child(GameSupervisor, game.poller)
-        DynamicSupervisor.terminate_child(GameSupervisor, game.handler)
+        kill_game(game_id)
     end
+  end
+
+  defp kill_game(game_id) do
+    Logger.info("Shutting down game with game_id #{game_id}")
+    game = Wargear.Daos.GamesInProgressDao.remove(game_id)
+    DynamicSupervisor.terminate_child(GameSupervisor, game.poller)
+    DynamicSupervisor.terminate_child(GameSupervisor, game.handler)
   end
 
   defp schedule_work(%State{total_fog: false}),
