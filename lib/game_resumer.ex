@@ -6,6 +6,7 @@ defmodule Wargear.GameResumer do
   def start_link(_), do: GenServer.start_link(__MODULE__, nil)
 
   def init(_) do
+    Logger.info("Initializing #{__MODULE__}")
     send(self(), :resume_games)
     {:ok, nil, 1000}
   end
@@ -30,7 +31,7 @@ defmodule Wargear.GameResumer do
     handler_spec = {Wargear.Events.Handler, [game_id: game_id, total_fog: total_fog]}
     {:ok, handler_pid} = DynamicSupervisor.start_child(GameSupervisor, handler_spec)
 
-    Wargear.Daos.GamesInProgressDao.add(%{
+    Dao.add(%{
       game_id: game_id,
       total_fog: total_fog,
       poller: poller_pid,
