@@ -10,7 +10,7 @@ defmodule Wargear do
     children = [
       supervisor(Wargear.Endpoint, []),
       worker(Wargear.Discord.Poller, run: true),
-      worker(Wargear.GameResumer, run: true, restart: :temporary),
+      worker(Wargear.GameResumer, run: true, restart: :permanent),
       {DynamicSupervisor, name: GameSupervisor, strategy: :one_for_one}
     ]
 
