@@ -16,6 +16,31 @@ defmodule Wargear.Messenger do
     |> post_to_slack()
   end
 
+  def announce_winner(player, game_id) do
+    text =
+      case player.slack_name do
+        _ ->
+          "<#{player.slack_name}> won game ##{game_id}, yay #{winning_gif(player.slack_name)} <@channel>"
+      end
+
+    %{text: text}
+    |> post_to_slack()
+  end
+
+  def winning_gif(slack_name) do
+    case slack_name do
+      # great success
+      "@atom.r" -> "https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif"
+      # spongebob bullshit
+      "@cvanthof85" -> "https://media.giphy.com/media/qL2kQFdyzApRS/giphy.gif"
+      "@json" -> "https://media.giphy.com/media/5XPb0FvIqylqg/giphy.gif"
+      "@heshman45" -> "https://media.giphy.com/media/5XPb0FvIqylqg/giphy.gif"
+      "@dan" -> "https://media.giphy.com/media/5XPb0FvIqylqg/giphy.gif"
+      "@zach" -> "https://media.giphy.com/media/5XPb0FvIqylqg/giphy.gif"
+      "@zachclash" -> "https://media.giphy.com/media/5XPb0FvIqylqg/giphy.gif"
+    end
+  end
+
   def list_channels do
     url = url(:list_channels)
     headers = headers()
@@ -47,7 +72,7 @@ defmodule Wargear.Messenger do
     HTTPoison.get!(url, headers, params: %{channel: channel_id, oldest: timestamp})
   end
 
-  defp post_to_slack(body, channel \\ :spitegear) do
+  def post_to_slack(body, channel \\ :spitegear) do
     url = url(:post_message)
     headers = headers()
     channel = Application.get_env(:wargear, :slack_app)[:channel_ids][channel]

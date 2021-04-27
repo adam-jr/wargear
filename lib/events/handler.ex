@@ -59,6 +59,7 @@ defmodule Wargear.Events.Handler do
 
     current_player_update(players, game_id)
     eliminated_players_update(players, game_id)
+    winner_winner_update(players, game_id)
   end
 
   def eliminated_players_update([], _), do: Logger.error("unable to update eliminated players")
@@ -91,6 +92,15 @@ defmodule Wargear.Events.Handler do
       Logger.info("Notifying #{current.name} of turn...")
       CurrentTurnDao.update(current.name, game_id)
       Wargear.Messenger.notify_of_turn(current, game_id)
+    end
+  end
+
+  defp winner_winner_update([], _), do: Logger.error("unable to update winner")
+
+  defp winner_winner_update(players, game_id) do
+    case Enum.find(players, & &1.winner) do
+      nil -> nil
+      player -> Wargear.Messenger.announce_winner(player, game_id)
     end
   end
 

@@ -1,5 +1,5 @@
 defmodule Wargear.Player do
-  defstruct name: nil, current: false, eliminated: false, slack_name: nil, slack_id: nil
+  defstruct name: nil, current: false, eliminated: false, slack_name: nil, slack_id: nil, winner: false
 
   def from_table_row(tr) do
     name = player_name(tr)
@@ -8,6 +8,7 @@ defmodule Wargear.Player do
       name: name,
       current: current_turn?(tr),
       eliminated: eliminated?(tr),
+      winner: winner?(tr),
       slack_name: slack_name(name),
       slack_id: slack_id(name)
     }
@@ -68,6 +69,16 @@ defmodule Wargear.Player do
 
     case eliminated_td do
       {"td", [], ["Eliminated"]} -> true
+      _ -> false
+    end
+  end
+
+  def winner?(tr) do
+    {"tr", [], tds} = tr
+    winner_td = Enum.at(tds, -3)
+
+    case winner_td do
+      {"td", [], ["Winner"]} -> true
       _ -> false
     end
   end
