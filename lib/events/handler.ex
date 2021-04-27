@@ -59,7 +59,7 @@ defmodule Wargear.Events.Handler do
 
     current_player_update(players, game_id)
     eliminated_players_update(players, game_id)
-    # winner_winner_update(players, game_id)
+    winner_winner_update(players, game_id)
   end
 
   def eliminated_players_update([], _), do: Logger.error("unable to update eliminated players")
