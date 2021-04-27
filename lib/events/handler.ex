@@ -103,9 +103,10 @@ defmodule Wargear.Events.Handler do
         nil
 
       player ->
-        # Wargear.Messenger.announce_winner(player, game_id)
-        Wargear.Daos.GamesInProgressDao.remove(game_id)
-        # DynamicSupervisor.terminate_child(GameSupervisor, self())
+        Wargear.Messenger.announce_winner(player, game_id)
+        game = Wargear.Daos.GamesInProgressDao.remove(game_id)
+        DynamicSupervisor.terminate_child(GameSupervisor, game.poller)
+        DynamicSupervisor.terminate_child(GameSupervisor, game.handler)
     end
   end
 

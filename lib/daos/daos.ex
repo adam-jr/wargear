@@ -62,8 +62,10 @@ defmodule Wargear.Daos do
     end
 
     def remove(game_id) do
-      games = get() |> Enum.reject(fn g -> g.game_id == game_id end)
-      Dets.insert(key(), games)
+      games = get()
+      game = Enum.find(games, &(&1.game_id == game_id))
+      Dets.insert(key(), Enum.reject(games, &(&1.game_id == game_id)))
+      game
     end
 
     def get do
