@@ -20,7 +20,7 @@ defmodule Wargear.Nishant.TradeAlert do
     POTENTIAL PROFIT: $500 (approx)
     ---------------
 
-    NOTES: 
+    NOTES:
     1. Place this limit order with the above parameters Good For Day.
     2. If the trade gets filled, place a GTC limit order to close it at $9.5
     3. If you have an account < $7K, avoid this trade as it risks $500. Instead try for the $800-$805 Call Spread for $2.5 instead.
@@ -44,8 +44,11 @@ defmodule Wargear.Nishant.TradeAlert do
   end
 
   defp with_prefix(text, prefix, suffix) do
-    [_hd, rest] = String.split(text, prefix)
-    [str | _rest] = String.split(rest, suffix)
-    str
+    with [_hd, rest] <- String.split(text, prefix),
+         [str | _rest] <- String.split(rest, suffix) do
+      str
+    else
+      nil
+    end
   end
 end

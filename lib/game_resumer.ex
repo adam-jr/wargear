@@ -5,10 +5,10 @@ defmodule Wargear.GameResumer do
 
   def child_spec(opts \\ []) do
     %{
-        id: __MODULE__,
-        start: {__MODULE__, :start_link, [opts]},
-        type: :worker,
-        restart: :temporary
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]},
+      type: :worker,
+      restart: :temporary
     }
   end
 

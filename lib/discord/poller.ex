@@ -14,7 +14,9 @@ defmodule Wargear.Discord.Poller do
   def init(_opts) do
     Logger.info("Initializing #{__MODULE__}")
 
-    Logger.info("#{__MODULE__} will poll every #{@active_interval / 1000} seconds during trading hours")
+    Logger.info(
+      "#{__MODULE__} will poll every #{@active_interval / 1000} seconds during trading hours"
+    )
 
     Process.send_after(self(), :work, 1000)
 
