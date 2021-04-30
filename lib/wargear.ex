@@ -8,9 +8,9 @@ defmodule Wargear do
     Logger.info("Starting Wargear <3")
 
     children = [
-      supervisor(Wargear.Endpoint, []),
-      worker(Wargear.Discord.Poller, run: true),
-      worker(Wargear.GameResumer, [run: true], restart: :temporary),
+      Wargear.Endpoint,
+      Wargear.Discord.Poller,
+      Wargear.GameResumer,
       {DynamicSupervisor, name: GameSupervisor, strategy: :one_for_one}
     ]
 

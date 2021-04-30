@@ -3,10 +3,18 @@ defmodule Wargear.GameResumer do
   alias Wargear.Daos.GamesInProgressDao, as: Dao
   require Logger
 
-  def start_link(_), do: GenServer.start_link(__MODULE__, nil)
+  def child_spec(opts \\ []) do
+    %{
+        id: __MODULE__,
+        start: {__MODULE__, :start_link, [opts]},
+        type: :worker,
+        restart: :temporary
+    }
+  end
 
-  def init(_) do
-    Logger.info("Initializing #{__MODULE__}")
+  def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts)
+
+  def init(_opts) do
     send(self(), :resume_games)
     {:ok, nil, 1000}
   end
@@ -18,7 +26,7 @@ defmodule Wargear.GameResumer do
     {:stop, :normal, nil}
   end
 
-  defp resume_game(%{game_id: game_id, total_fog: total_fog} = game) do
+  defp resume_game(%{game_id: game_id, total_fog: total_fog}) do
     Logger.info("#{__MODULE__} resuming game #{game_id}")
 
     poller_pid =

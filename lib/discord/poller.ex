@@ -7,11 +7,11 @@ defmodule Wargear.Discord.Poller do
   @active_interval 15 * 1000
   @channel :trade_alerts
 
-  def start_link(params) do
-    GenServer.start_link(__MODULE__, params)
+  def start_link(opts \\ []) do
+    GenServer.start_link(__MODULE__, opts)
   end
 
-  def init(_) do
+  def init(_opts) do
     Logger.info("Initializing #{__MODULE__}")
 
     Logger.info("#{__MODULE__} will poll every #{@active_interval / 1000} seconds during trading hours")

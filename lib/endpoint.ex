@@ -10,7 +10,15 @@ defmodule Wargear.Endpoint do
     options
   end
 
-  def start_link do
+  def child_spec(opts \\ []) do
+    %{
+        id: __MODULE__,
+        start: {__MODULE__, :start_link, [opts]},
+        type: :worker
+    }
+  end
+
+  def start_link(opts) do
     # NOTE: This starts Cowboy listening on the default port of 4000
     {:ok, _} = Plug.Adapters.Cowboy.http(__MODULE__, [], port: 8080)
   end
