@@ -1,15 +1,5 @@
 defmodule Wargear.Nishant.TradeAlert do
-  defstruct text: nil,
-            symbol: nil,
-            expiry: nil,
-            call_debit?: true,
-            long_strike: nil,
-            short_strike: nil,
-            limit_price: nil,
-            asset_price: nil,
-            alerted_at: nil
-
-  """
+  @moduledoc """
     +TRADE ALERT
     SYMBOL: BLK
     EXPIRY: 5/28
@@ -25,6 +15,16 @@ defmodule Wargear.Nishant.TradeAlert do
     2. If the trade gets filled, place a GTC limit order to close it at $9.5
     3. If you have an account < $7K, avoid this trade as it risks $500. Instead try for the $800-$805 Call Spread for $2.5 instead.
   """
+
+  defstruct text: nil,
+            symbol: nil,
+            expiry: nil,
+            call_debit?: true,
+            long_strike: nil,
+            short_strike: nil,
+            limit_price: nil,
+            asset_price: nil,
+            alerted_at: nil
 
   alias Wargear.Discord.Message, as: DiscordMessage
 
@@ -48,7 +48,7 @@ defmodule Wargear.Nishant.TradeAlert do
          [str | _rest] <- String.split(rest, suffix) do
       str
     else
-      nil
+      _ -> nil
     end
   end
 end

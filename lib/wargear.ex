@@ -3,8 +3,6 @@ defmodule Wargear do
   require Logger
 
   def start(_, _) do
-    import Supervisor.Spec
-
     Logger.info("Starting Wargear <3")
 
     children = [
