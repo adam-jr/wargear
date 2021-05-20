@@ -9,7 +9,7 @@ defmodule Wargear.Nishant.TradeAlert do
     PRICE AT TIME OF TRADE: $796.75
     POTENTIAL PROFIT: $500 (approx)
     ---------------
-
+wowow
     NOTES:
     1. Place this limit order with the above parameters Good For Day.
     2. If the trade gets filled, place a GTC limit order to close it at $9.5
