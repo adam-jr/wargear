@@ -9,7 +9,8 @@ defmodule Wargear do
       Wargear.Endpoint,
       Wargear.Discord.Poller,
       Wargear.GameResumer,
-      {DynamicSupervisor, name: GameSupervisor, strategy: :one_for_one}
+      {DynamicSupervisor, name: GameSupervisor, strategy: :one_for_one},
+      {Wargear.Repo, []}
     ]
 
     opts = [strategy: :one_for_one, name: Wargear.Supervisor]
