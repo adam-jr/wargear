@@ -76,7 +76,7 @@ defmodule Wargear.Events do
   end
 
   defp to_event({"tr", [{"class", "row_dark"}], children}) do
-    [[id], [dt], [seat], [action], ad, dd, bmod, al, dl, _] =
+    [[id], [dt], seat, [action], ad, dd, bmod, al, dl, _] =
       Enum.map(children, fn {_, _, val} -> val end)
 
     {att, def} = get_sides(action)
@@ -95,7 +95,7 @@ defmodule Wargear.Events do
           type: get_type(action),
           player: get_player(action),
           datetime: dt,
-          seat: String.to_integer(seat),
+          seat: get_seat(seat),
           action: action,
           bonus_units: get_bonus_units(action),
           trade_units: get_trade_units(action),
@@ -109,6 +109,9 @@ defmodule Wargear.Events do
         }
     end
   end
+
+  defp get_seat([]), do: nil
+  defp get_seat([num]), do: String.to_integer(num)
 
   defp get_player(action) do
     case action do
